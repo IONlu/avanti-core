@@ -20,7 +20,7 @@ switch (args[0]) {
                 console.log('invalid arg count');
                 return;
             }
-            return User.remove(args[2]);
+            return User.remove(args[2], args[3]);
         }
         break;
 }
