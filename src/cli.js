@@ -9,18 +9,18 @@ if (args.length < 2) {
 switch (args[0]) {
     case 'customer':
         if (args[1] == 'create') {
-            if (args.length < 4) {
+            if (args.length < 3) {
                 console.log('invalid arg count');
                 return;
             }
-            return Customer.create(args[2], args[3]);
+            return Customer.create(args[2]);
         }
         if (args[1] == 'remove') {
-            if (args.length < 4) {
+            if (args.length < 3) {
                 console.log('invalid arg count');
                 return;
             }
-            return Customer.remove(args[2], args[3]);
+            return Customer.remove(args[2]);
         }
         break;
 }
