@@ -1,25 +1,25 @@
 {
-  "name": "vhost-manager",
-  "version": "0.1.0",
-  "description": "",
-  "main": "manager.js",
-  "dependencies": {
-    "ini": "^1.3.4",
-    "handlebars": "~4.0.5",
-    "bluebird": "~3.3.4"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/IONlu/vhost-manager.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/IONlu/vhost-manager/issues"
-  },
-  "homepage": "https://github.com/IONlu/vhost-manager#readme"
+    "name": "Avanti",
+    "version": "0.1.0",
+    "description": "",
+    "main": "avanti.js",
+    "dependencies": {
+        "ini": "^1.3.4",
+        "handlebars": "~4.0.5",
+        "bluebird": "~3.3.4"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/IONlu/avanti.git"
+    },
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/IONlu/avanti/issues"
+    },
+    "homepage": "https://github.com/IONlu/avanti#readme"
 }
