@@ -22,7 +22,12 @@ module.exports = {
 
     remove: function(hostname, user) {
         return createBackupFolder().then(function() {
+
+            // generate a compressed backup of the user's home folder and then remove the home folder
+
             return cp.exec('deluser --backup --backup-to /var/www/backup --remove-home ' + user).then(function() {
+
+                // for some reason, the '--remove-home' command is not working properly, so we have to delete the home folder "manually"
                 return cp.exec('rm -fr /var/www/vhosts/' + hostname);
             });
         });
