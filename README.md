@@ -1,4 +1,4 @@
-# avanti
+# Avanti
 
 Install packages
 ----------------
