@@ -20,10 +20,10 @@ function reboot() {
 
 module.exports = {
 
-    create: function(hostname, user) {
+    create: function(hostname, customer) {
         var data = ini.encode({
-            user: user,
-            group: user,
+            user: customer,
+            group: customer,
             listen: '/run/php/' + hostname + '.sock',
             'listen.owner': 'www-data',
             'listen.group': 'www-data',
@@ -32,7 +32,7 @@ module.exports = {
             'pm.start_servers': 1,
             'pm.min_spare_servers': 1,
             'pm.max_spare_servers': 3,
-            'php_admin_value[open_basedir]': '/var/www/vhosts/' + hostname
+            'php_admin_value[open_basedir]': '/var/www/' + customer + '/' + hostname
         }, {
             section: hostname
         });
