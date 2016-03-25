@@ -31,7 +31,8 @@ module.exports = {
             'pm.max_children': 5,
             'pm.start_servers': 2,
             'pm.min_spare_servers': 1,
-            'pm.max_spare_servers': 3
+            'pm.max_spare_servers': 3,
+            'php_admin_value[open_basedir]': '/var/www/vhosts/' + hostname
         }, {
             section: hostname
         });
