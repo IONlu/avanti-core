@@ -13,14 +13,14 @@ switch (args[0]) {
                 console.log('invalid arg count');
                 return;
             }
-            return Customer.create(args[2]);
+            return (new Customer(args[2])).create();
         }
         if (args[1] == 'remove') {
             if (args.length < 3) {
                 console.log('invalid arg count');
                 return;
             }
-            return Customer.remove(args[2]);
+            return (new Customer(args[2])).remove();
         }
         break;
 }
