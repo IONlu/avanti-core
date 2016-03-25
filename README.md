@@ -1,7 +1,6 @@
 # Avanti
+## Install packages
 
-Install packages
-----------------
 ```
 apt update
 apt install apache2 cronolog
