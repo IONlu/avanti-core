@@ -1,4 +1,4 @@
-# vhost-manager
+# avanti
 
 Install packages
 ----------------
