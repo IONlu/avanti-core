@@ -28,7 +28,7 @@ function testConfig() {
 }
 
 // compile vhost template
-var vhostTemplate handlebars.compile(__dirname + '/templates/vhost.tpl');
+var vhostTemplate handlebars.compile(__dirname + '/templates/vhost.hbs');
 
 module.exports = {
 
