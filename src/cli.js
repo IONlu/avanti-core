@@ -16,7 +16,7 @@ switch (args[0]) {
             return User.create(args[2], args[3]);
         }
         if (args[1] == 'remove') {
-            if (args.length < 3) {
+            if (args.length < 4) {
                 console.log('invalid arg count');
                 return;
             }
