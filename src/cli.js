@@ -1,4 +1,4 @@
-var User = require('./user.js'),
+var Customer = require('./customer.js'),
     args = process.argv.slice(2);
 
 if (args.length < 2) {
@@ -7,20 +7,20 @@ if (args.length < 2) {
 }
 
 switch (args[0]) {
-    case 'user':
+    case 'customer':
         if (args[1] == 'create') {
             if (args.length < 4) {
                 console.log('invalid arg count');
                 return;
             }
-            return User.create(args[2], args[3]);
+            return Customer.create(args[2], args[3]);
         }
         if (args[1] == 'remove') {
             if (args.length < 4) {
                 console.log('invalid arg count');
                 return;
             }
-            return User.remove(args[2], args[3]);
+            return Customer.remove(args[2], args[3]);
         }
         break;
 }
