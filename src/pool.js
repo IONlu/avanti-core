@@ -1,6 +1,10 @@
-var ini = require('ini'),
-    fs = require('fs-promise'),
-    exec = require('exec-as-promised')();
+var Promise = require('bluebird'),
+    ini = require('ini'),
+    fs = require('fs'),
+    cp = require('child_process');
+
+Promise.promisifyAll(fs);
+Promise.promisifyAll(cp);
 
 function createPoolFile(hostname, data) {
     return fs.writeFile('/etc/php/7.0/fpm/pool.d/' + hostname + '.conf', data);
@@ -11,7 +15,7 @@ function removePoolFile(hostname) {
 }
 
 function reboot() {
-    return exec('service php7.0-fpm restart');
+    return cp.exec('service php7.0-fpm restart');
 }
 
 module.exports = {
@@ -31,15 +35,13 @@ module.exports = {
         }, {
             section: hostname
         });
-        return createPoolFile(hostname, data).then(function() {
-            return reboot();
-        });
+        return createPoolFile(hostname, data)
+            .then(reboot.bind(this));
     },
 
     remove: function(hostname) {
-        return removePoolFile(hostname).then(function() {
-            return reboot();
-        });
+        return removePoolFile(hostname)
+            .then(reboot.bind(this));
     }
 
 };
