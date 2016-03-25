@@ -1,33 +1,33 @@
 var Promise = require('bluebird'),
     fs = require('fs'),
-    exec = require('child_process').exec,
+    cp = require('child_process'),
     Handlebars = require('handlebars');
 
 Promise.promisifyAll(fs);
-Promise.promisify(exec);
+Promise.promisifyAll(cp);
 
 function enableVhost(hostname) {
-    return exec('a2ensite ' + hostname);
+    return cp.execAsync('a2ensite ' + hostname);
 }
 
 function disableVhost(hostname) {
-    return exec('a2dissite ' + hostname);
+    return cp.execAsync('a2dissite ' + hostname);
 }
 
 function createVhostFile(hostname, data) {
-    return fs.writeFile('/etc/apache2/sites-available/' + hostname + '.conf', data);
+    return fs.writeFileAsync('/etc/apache2/sites-available/' + hostname + '.conf', data);
 }
 
 function removeVhostFile(hostname) {
-    return fs.unlink('/etc/apache2/sites-available/' + hostname + '.conf');
+    return fs.unlinkAsync('/etc/apache2/sites-available/' + hostname + '.conf');
 }
 
 function reboot() {
-    return exec('service apache2 restart');
+    return cp.execAsync('service apache2 restart');
 }
 
 function testConfig() {
-    return exec('apachectl configtest');
+    return cp.execAsync('apachectl configtest');
 }
 
 // compile vhost template

@@ -1,22 +1,22 @@
 var Promise = require('bluebird'),
-    exec = require('child_process').exec;
+    cp = require('child_process');
 
-Promise.promisify(exec);
+Promise.promisifyAll(cp);
 
 function createHomeFolder(hostname, user) {
-    return exec('mkdir -p /var/www/vhosts/' + hostname).then(function() {
-        return exec('chown -R ' + user + ': /var/www/vhosts/' + hostname);
+    return cp.execAsync('mkdir -p /var/www/vhosts/' + hostname).then(function() {
+        return cp.execAsync('chown -R ' + user + ': /var/www/vhosts/' + hostname);
     });
 }
 
 function createBackupFolder() {
-    return exec('mkdir -p /var/www/backup');
+    return cp.execAsync('mkdir -p /var/www/backup');
 }
 
 module.exports = {
 
     create: function(hostname, user) {
-        return exec('useradd --home-dir /var/www/vhosts/' + hostname + ' --shell /bin/false ' + user)
+        return cp.execAsync('useradd --home-dir /var/www/vhosts/' + hostname + ' --shell /bin/false ' + user)
             .then(createHomeFolder.bind(this, hostname, user));
     },
 
@@ -24,11 +24,10 @@ module.exports = {
         return createBackupFolder().then(function() {
 
             // generate a compressed backup of the user's home folder and then remove the home folder
-
-            return exec('deluser --backup --backup-to /var/www/backup --remove-home ' + user).then(function() {
+            return cp.execAsync('deluser --backup --backup-to /var/www/backup --remove-home ' + user).then(function() {
 
                 // for some reason, the '--remove-home' command is not working properly, so we have to delete the home folder "manually"
-                return exec('rm -fr /var/www/vhosts/' + hostname);
+                return cp.execAsync('rm -fr /var/www/vhosts/' + hostname);
             });
         });
     }
