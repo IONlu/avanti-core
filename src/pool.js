@@ -28,8 +28,8 @@ module.exports = {
             'listen.owner': 'www-data',
             'listen.group': 'www-data',
             pm: 'dynamic',
-            'pm.max_children': 5,
-            'pm.start_servers': 2,
+            'pm.max_children': 6,
+            'pm.start_servers': 1,
             'pm.min_spare_servers': 1,
             'pm.max_spare_servers': 3,
             'php_admin_value[open_basedir]': '/var/www/vhosts/' + hostname
