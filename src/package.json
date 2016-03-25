@@ -1,0 +1,24 @@
+{
+  "name": "vhost-manager",
+  "version": "0.1.0",
+  "description": "",
+  "main": "manager.js",
+  "dependencies": {
+    "exec-as-promised": "^2.0.0",
+    "ini": "^1.3.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IONlu/vhost-manager.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IONlu/vhost-manager/issues"
+  },
+  "homepage": "https://github.com/IONlu/vhost-manager#readme"
+}
