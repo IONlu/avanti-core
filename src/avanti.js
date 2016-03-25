@@ -1,2 +1,2 @@
-var Pool = require('pool.js'),
-    User = require('user.js');
+var Pool = require('./pool.js'),
+    User = require('./user.js');

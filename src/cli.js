@@ -1,4 +1,4 @@
-var User = require('user.js'),
+var User = require('./user.js'),
     args = process.argv.slice(2);
 
 if (args.length < 2) {
