@@ -1,33 +1,29 @@
 var exec = require('exec-as-promised')();
 
-function createHomeFolder(domain, user)
-{
-    return exec('mkdir -p /var/www/vhosts/' + domain).then(function() {
-        return exec('chown -R ' + user + ': /var/www/vhosts/' + domain);
+function createHomeFolder(hostname, user) {
+    return exec('mkdir -p /var/www/vhosts/' + hostname).then(function() {
+        return exec('chown -R ' + user + ': /var/www/vhosts/' + hostname);
     });
 }
 
-function createBackupFolder()
-{
+function createBackupFolder() {
     return exec('mkdir -p /var/www/backup');
 }
 
 module.exports = {
 
-    create: function(domain, user)
-    {
-        return exec('useradd --home-dir /var/www/vhosts/' + domain + ' --shell /bin/false ' + user).then(function() {
-            return createHomeFolder(domain, user);
+    create: function(hostname, user) {
+        return exec('useradd --home-dir /var/www/vhosts/' + hostname + ' --shell /bin/false ' + user).then(function() {
+            return createHomeFolder(hostname, user);
         });
     },
 
 
-    remove: function(domain, user)
-    {
+    remove: function(hostname, user) {
         return createBackupFolder().then(function() {
             return exec('deluser --backup --backup-to /var/www/backup --remove-home ' + user).then(function() {
-                return exec('rm -fr /var/www/vhosts/' + domain);
-            }); 
+                return exec('rm -fr /var/www/vhosts/' + hostname);
+            });
         });
     }
 
