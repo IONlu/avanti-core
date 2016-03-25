@@ -35,9 +35,10 @@ var vhostTemplate = Handlebars.compile(__dirname + '/templates/vhost.hbs');
 
 module.exports = {
 
-    create: function(hostname, user) {
+    create: function(hostname, customer) {
         var data = vhostTemplate({
-            hostname: hostname
+            hostname: hostname,
+            customer: customer
         });
         return createVhostFile(hostname, data)
             .then(enableVhost.bind(this))
