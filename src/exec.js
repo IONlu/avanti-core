@@ -4,7 +4,7 @@ var Promise = require('bluebird'),
 
 Promise.promisifyAll(cp);
 
-var prepareCommand(command, params) {
+function prepareCommand(command, params) {
     return command.replace(/\{\{([a-z0-9_]+)\}\}/i, function(match, key) {
         if (!params[key] || !params[key].length)
             throw 'exec: "' + key + '" is missing or empty';
