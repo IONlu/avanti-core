@@ -1,26 +1,27 @@
 {
-    "name": "Avanti",
-    "version": "0.1.0",
-    "description": "",
-    "main": "avanti.js",
-    "dependencies": {
-        "ini": "^1.3.4",
-        "handlebars": "~4.0.5",
-        "bluebird": "~3.3.4",
-        "tape": "^3.5.0"
-    },
-    "devDependencies": {},
-    "scripts": {
-        "test": "tape test/*.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/IONlu/avanti.git"
-    },
-    "author": "",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/IONlu/avanti/issues"
-    },
-    "homepage": "https://github.com/IONlu/avanti#readme"
+  "name": "Avanti",
+  "version": "0.1.0",
+  "description": "",
+  "main": "avanti.js",
+  "dependencies": {
+    "bluebird": "~3.3.4",
+    "handlebars": "~4.0.5",
+    "ini": "^1.3.4",
+    "phpjs": "^1.3.2",
+    "tape": "^3.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IONlu/avanti.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IONlu/avanti/issues"
+  },
+  "homepage": "https://github.com/IONlu/avanti#readme"
 }

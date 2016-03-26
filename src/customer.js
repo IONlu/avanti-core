@@ -1,22 +1,20 @@
-var Promise = require('bluebird'),
-    cp = require('child_process');
-
-Promise.promisifyAll(cp);
+var exec = require('./exec.js');
 
 // private functions
 
 function createHomeFolder(name) {
-    return cp.execAsync('mkdir -p /var/www/' + name).then(function() {
-        return cp.execAsync('chown -R ' + name + ': /var/www/' + name);
-    });
+    return exec('mkdir -p /var/www/{{name}}', {name: name})
+        .then(function() {
+            return exec('chown -R {{name}}:{{name}} /var/www/{{name}}', {name: name});
+        });
 }
 
 function createBackupFolder(name) {
-    return cp.execAsync('mkdir -p /var/backup-www/' + name);
+    return exec('mkdir -p /var/backup-www/{{name}}', {name: name});
 }
 
 function removeHomeFolder(name) {
-    return cp.execAsync('rm -fr /var/www/' + name);
+    return exec('rm -fr /var/www/{{name}}', {name: name});
 }
 
 // customer class
@@ -27,7 +25,7 @@ var Customer = function(name) {
 }
 
 Customer.prototype.create = function() {
-    return cp.execAsync('useradd --home-dir /var/www/' + this.name + ' --shell /bin/false ' + this.name)
+    return exec('useradd --home-dir /var/www/{{name}} --shell /bin/false {{name}}', {name: this.name})
         .then(createHomeFolder.bind(this, this.name));
 }
 
@@ -37,7 +35,7 @@ Customer.prototype.remove = function() {
 
     // generate a compressed backup of the customer's home folder and then remove the home folder
     .then(function() {
-        return cp.execAsync('deluser --backup --backup-to /var/www/backup --remove-home ' + _t.name)
+        return exec('deluser --backup --backup-to /var/www/backup --remove-home {{name}}', {name: _t.name});
     })
 
     // for some reason, the '--remove-home' command is not working properly, so we have to delete the home folder "manually"
