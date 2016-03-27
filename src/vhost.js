@@ -4,6 +4,7 @@ var Promise = require('bluebird'),
     Handlebars = require('handlebars');
 
 var writeFile = Promise.promisify(fs.writeFile),
+    readFile = Promise.promisify(fs.readFile),
     unlink = Promise.promisify(fs.unlink);
 
 function enableVhost(hostname) {
@@ -30,8 +31,11 @@ function testConfig() {
     return exec('apachectl configtest');
 }
 
-// compile vhost template
-var vhostTemplate = Handlebars.compile(__dirname + '/templates/vhost.hbs');
+// load and compile vhost template
+var loadTemplate = readFile(__dirname + '/templates/vhost.hbs')
+    .then(function(template) {
+        return Handlebars.compile(template);
+    });
 
 var Vhost = function(customer, hostname) {
     this.customer = customer;
@@ -39,8 +43,12 @@ var Vhost = function(customer, hostname) {
 }
 
 Vhost.prototype.create = function() {
-    var data = vhostTemplate(this);
-    return createVhostFile(this.hostname, data)
+    var _t = this;
+    return loadTemplate
+        .then(function(template) {
+            var data = template(this);
+            return createVhostFile(this.hostname, data);
+        })
         .then(enableVhost.bind(this, this.hostname))
         .then(reboot.bind(this));
 }
