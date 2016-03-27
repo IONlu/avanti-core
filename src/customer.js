@@ -31,7 +31,7 @@ Customer.prototype.create = function() {
 
 Customer.prototype.remove = function() {
     var _t = this;
-    return createBackupFolder()
+    return createBackupFolder(_t.name)
 
     // generate a compressed backup of the customer's home folder and then remove the home folder
     .then(function() {
