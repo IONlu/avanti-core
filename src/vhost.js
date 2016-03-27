@@ -31,6 +31,17 @@ function testConfig() {
     return exec('apachectl configtest');
 }
 
+function createVhostFolder(customer, name) {
+    return exec('mkdir -p /var/www/{{customer}}/{{name}}', {name: name, customer: customer})
+        .then(function() {
+            return exec('chown -R {{customer}}:{{customer}} /var/www/{{customer}}/{{name}}', {name: name, customer: customer});
+        });
+}
+
+function removeVhostFolder(customer, name) {
+    return exec('rm -fr /var/www/{{customer}}/{{name}}', {name: name, customer: customer});
+}
+
 // load and compile vhost template
 var loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
     .then(function(template) {
@@ -49,6 +60,7 @@ Vhost.prototype.create = function() {
             var data = template(_t);
             return createVhostFile(_t.hostname, data);
         })
+        .then(createVhostFolder.bind(this, this.customer.name, this.hostname))
         .then(enableVhost.bind(this, this.hostname))
         .then(reboot.bind(this));
 }
@@ -56,6 +68,7 @@ Vhost.prototype.create = function() {
 Vhost.prototype.remove = function() {
     return disableVhost(this.hostname)
         .then(removeVhostFile.bind(this, this.hostname))
+        .then(removeVhostFolder.bind(this, this.customer.name, this.hostname))
         .then(reboot.bind(this));
 };
 
