@@ -41,7 +41,7 @@ var Vhost = function(customer, hostname) {
 Vhost.prototype.create = function() {
     var data = vhostTemplate(this);
     return createVhostFile(this.hostname, data)
-        .then(enableVhost.bind(this))
+        .then(enableVhost.bind(this, this.hostname))
         .then(reboot.bind(this));
 }
 
