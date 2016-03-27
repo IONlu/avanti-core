@@ -1,17 +1,24 @@
 var Promise = require('bluebird'),
-    cp = require('child_process'),
-    escapeArg = require('phpjs').escapeshellarg;
+    spawn = require('child_process').spawn;
 
-Promise.promisifyAll(cp);
+spawn = Promise.promisify(spawn);
 
-function prepareCommand(command, params) {
-    return command.replace(/\{\{([a-z0-9_]+)\}\}/i, function(match, key) {
+function replacePlaceholders = function(params, string) {
+    return string.replace(/\{\{([a-z0-9_]+)\}\}/ig, function(match, key) {
         if (!params[key] || !params[key].length)
             throw 'exec: "' + key + '" is missing or empty';
-        return escapeArg(params[key]);
+        return params[key];
     });
 }
 
 module.exports = function(command, params) {
-    return cp.execAsync(prepareCommand(command, params));
+    // split string on not escaped whitespaces
+    var args = command.split(/(?<!\\) +/)
+        // replace placeholders
+        .map(replacePlaceholders.bind(this, params));
+
+    // first argument is the command
+    var command = args.shift(args);
+
+    return spawn(command, args);
 }
