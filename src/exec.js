@@ -3,7 +3,7 @@ var Promise = require('bluebird'),
 
 spawn = Promise.promisify(spawn);
 
-function replacePlaceholders = function(params, string) {
+function replacePlaceholders(params, string) {
     return string.replace(/\{\{([a-z0-9_]+)\}\}/ig, function(match, key) {
         if (!params[key] || !params[key].length)
             throw 'exec: "' + key + '" is missing or empty';
