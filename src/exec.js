@@ -1,7 +1,7 @@
 var Promise = require('bluebird'),
     exec = require('child_process').exec;
 
-exec = Promise.promisify(spawn);
+exec = Promise.promisify(exec);
 
 function escapeString(string) {
     return string.replace(/[^\\](['"])/g, function(match, quote) {
