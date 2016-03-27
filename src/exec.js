@@ -1,24 +1,22 @@
 var Promise = require('bluebird'),
-    spawn = require('child_process').spawn;
+    exec = require('child_process').exec;
 
-spawn = Promise.promisify(spawn);
+exec = Promise.promisify(spawn);
 
-function replacePlaceholders(params, string) {
+function escapeString(string) {
+    return string.replace(/[^\\](['"])/g, function(match, quote) {
+        return m.slice(0, 1) + '\\' + quote;
+    });
+}
+
+function replacePlaceholders(string, params) {
     return string.replace(/\{\{([a-z0-9_]+)\}\}/ig, function(match, key) {
         if (!params[key] || !params[key].length)
             throw 'exec: "' + key + '" is missing or empty';
-        return params[key];
+        return escapeString(params[key]);
     });
 }
 
 module.exports = function(command, params) {
-    // split string on not escaped whitespaces
-    var args = command.split(/(?<!\\) +/)
-        // replace placeholders
-        .map(replacePlaceholders.bind(this, params));
-
-    // first argument is the command
-    var command = args.shift(args);
-
-    return spawn(command, args);
+    return exec(replacePlaceholders(command, params));
 }
