@@ -33,22 +33,22 @@ function testConfig() {
 // compile vhost template
 var vhostTemplate = Handlebars.compile(__dirname + '/templates/vhost.hbs');
 
-module.exports = {
+var Vhost = function(customer, hostname) {
+    this.customer = customer;
+    this.hostname = hostname;
+}
 
-    create: function(hostname, customer) {
-        var data = vhostTemplate({
-            hostname: hostname,
-            customer: customer
-        });
-        return createVhostFile(hostname, data)
-            .then(enableVhost.bind(this))
-            .then(reboot.bind(this));
-    },
+Vhost.prototype.create = function() {
+    var data = vhostTemplate(this);
+    return createVhostFile(this.hostname, data)
+        .then(enableVhost.bind(this))
+        .then(reboot.bind(this));
+}
 
-    remove: function(hostname) {
-        return disableVhost(hostname)
-            .then(removeVhostFile.bind(this, hostname))
-            .then(reboot.bind(this));
-    }
-
+Vhost.prototype.remove = function() {
+    return disableVhost(this.hostname)
+        .then(removeVhostFile.bind(this, this.hostname))
+        .then(reboot.bind(this));
 };
+
+module.exports = Vhost;

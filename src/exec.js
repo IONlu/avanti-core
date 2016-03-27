@@ -11,8 +11,9 @@ function escapeString(string) {
 
 function replacePlaceholders(string, params) {
     return string.replace(/\{\{([a-z0-9_]+)\}\}/ig, function(match, key) {
-        if (!params[key] || !params[key].length)
+        if (!params[key] || !params[key].length) {
             throw 'exec: "' + key + '" is missing or empty';
+        }
         return escapeString(params[key]);
     });
 }

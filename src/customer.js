@@ -1,4 +1,5 @@
-var exec = require('./exec.js');
+var exec = require('./exec.js'),
+    Vhost = require('./vhost.js');
 
 // private functions
 
@@ -20,6 +21,9 @@ function removeHomeFolder(name) {
 // customer class
 
 var Customer = function(name) {
+    if (name.length > 16 || name.match(/[a-z0-9]/i)) {
+        throw "invalid customer name \"" + name + "\"";
+    }
     this.name = name;
     this.hostnames = {};
 }
@@ -40,6 +44,14 @@ Customer.prototype.remove = function() {
 
     // for some reason, the '--remove-home' command is not working properly, so we have to delete the home folder "manually"
     .then(removeHomeFolder.bind(this, this.name));
+}
+
+Customer.prototype.addVhost = function(hostname) {
+    (new Vhost(this, hostname)).create();
+}
+
+Customer.prototype.removeVhost = function(hostname) {
+    (new Vhost(this, hostname)).remove();
 }
 
 module.exports = Customer;
