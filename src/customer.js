@@ -21,7 +21,7 @@ function removeHomeFolder(name) {
 // customer class
 
 var Customer = function(name) {
-    if (name.length > 16 || name.match(/[a-z0-9]/i)) {
+    if (name.length > 16 || name.match(/[^a-z0-9]/i)) {
         throw "invalid customer name \"" + name + "\"";
     }
     this.name = name;
