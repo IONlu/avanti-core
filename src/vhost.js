@@ -32,7 +32,7 @@ function testConfig() {
 }
 
 // load and compile vhost template
-var loadTemplate = readFile(__dirname + '/templates/vhost.hbs')
+var loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
     .then(function(template) {
         return Handlebars.compile(template);
     });
