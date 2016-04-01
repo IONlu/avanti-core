@@ -1,15 +1,15 @@
 <VirtualHost *:80>
-    ServerName {{hostname}}
-    DocumentRoot /var/www/{{customer.name}}/{{hostname}}
+    ServerName {{name}}
+    DocumentRoot /var/www/{{customer.name}}/{{name}}
 
-    ErrorLog "|/usr/bin/cronolog ${APACHE_LOG_DIR}/{{customer.name}}/{{hostname}}/error.log-%Y%m%d"
-    CustomLog "|/usr/bin/cronolog ${APACHE_LOG_DIR}/{{customer.name}}/{{hostname}}/access.log-%Y%m%d" combined
+    ErrorLog "|/usr/bin/cronolog ${APACHE_LOG_DIR}/{{customer.name}}/{{name}}/error.log-%Y%m%d"
+    CustomLog "|/usr/bin/cronolog ${APACHE_LOG_DIR}/{{customer.name}}/{{name}}/access.log-%Y%m%d" combined
 
     <FilesMatch ".+\.php$">
-        SetHandler "proxy:unix:/run/php/{{hostname}}.sock|fcgi://localhost"
+        SetHandler "proxy:unix:/run/php/{{name}}.sock|fcgi://localhost"
     </FilesMatch>
 
-    <Directory /var/www/{{customer.name}}/{{hostname}}>
+    <Directory /var/www/{{customer.name}}/{{name}}>
         AllowOverride All
     </Directory>
 </VirtualHost>
