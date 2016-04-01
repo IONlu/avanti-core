@@ -1,18 +1,23 @@
 var Promise = require('bluebird'),
     fs = require('fs'),
     exec = require('./exec.js'),
-    Handlebars = require('handlebars');
+    Handlebars = require('handlebars'),
+    Pool = require('./pool.js');
 
 var writeFile = Promise.promisify(fs.writeFile),
     readFile = Promise.promisify(fs.readFile),
     unlink = Promise.promisify(fs.unlink);
 
 function enableVhost(hostname) {
-    return exec('a2ensite {{hostname}}', {hostname: hostname});
+    return exec('a2ensite {{hostname}}', {
+        hostname: hostname
+    });
 }
 
 function disableVhost(hostname) {
-    return exec('a2dissite {{hostname}}', {hostname: hostname});
+    return exec('a2dissite {{hostname}}', {
+        hostname: hostname
+    });
 }
 
 function createVhostFile(hostname, data) {
@@ -32,14 +37,31 @@ function testConfig() {
 }
 
 function createVhostFolder(customer, name) {
-    return exec('mkdir -p /var/www/{{customer}}/{{name}}', {name: name, customer: customer})
+    return exec('mkdir -p /var/www/{{customer}}/{{name}}', {
+            name: name,
+            customer: customer
+        })
         .then(function() {
-            return exec('chown -R {{customer}}:{{customer}} /var/www/{{customer}}/{{name}}', {name: name, customer: customer});
+            return exec('chown -R {{customer}}:{{customer}} /var/www/{{customer}}/{{name}}', {
+                name: name,
+                customer: customer
+            });
         });
 }
 
 function removeVhostFolder(customer, name) {
-    return exec('rm -fr /var/www/{{customer}}/{{name}}', {name: name, customer: customer});
+    return exec('rm -fr /var/www/{{customer}}/{{name}}', {
+        name: name,
+        customer: customer
+    });
+}
+
+function addPool(vhost) {
+    return (new Pool(vhost)).create();
+}
+
+function removePool(vhost) {
+    return (new Pool(vhost)).remove();
 }
 
 // load and compile vhost template
@@ -62,6 +84,7 @@ Vhost.prototype.create = function() {
         })
         .then(createVhostFolder.bind(this, this.customer.name, this.hostname))
         .then(enableVhost.bind(this, this.hostname))
+        .then(addPool.bind(this))
         .then(reboot.bind(this));
 }
 
@@ -69,6 +92,7 @@ Vhost.prototype.remove = function() {
     return disableVhost(this.hostname)
         .then(removeVhostFile.bind(this, this.hostname))
         .then(removeVhostFolder.bind(this, this.customer.name, this.hostname))
+        .then(removePool.bind(this))
         .then(reboot.bind(this));
 };
 
