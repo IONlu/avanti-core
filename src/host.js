@@ -56,12 +56,12 @@ function removeVhostFolder(customer, name) {
     });
 }
 
-function addPool(vhost) {
-    return (new Pool(vhost)).create();
+function addPool(host) {
+    return (new Pool(host)).create();
 }
 
-function removePool(vhost) {
-    return (new Pool(vhost)).remove();
+function removePool(host) {
+    return (new Pool(host)).remove();
 }
 
 // load and compile vhost template
@@ -70,30 +70,30 @@ var loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
         return Handlebars.compile(template);
     });
 
-var Vhost = function(customer, hostname) {
+var Host = function(customer, name) {
     this.customer = customer;
-    this.hostname = hostname;
+    this.name = name;
 }
 
-Vhost.prototype.create = function() {
+Host.prototype.create = function() {
     var _t = this;
     return loadTemplate
         .then(function(template) {
             var data = template(_t);
-            return createVhostFile(_t.hostname, data);
+            return createVhostFile(_t.name, data);
         })
-        .then(createVhostFolder.bind(this, this.customer.name, this.hostname))
-        .then(enableVhost.bind(this, this.hostname))
+        .then(createVhostFolder.bind(this, this.customer.name, this.name))
+        .then(enableVhost.bind(this, this.name))
         .then(addPool.bind(this, this))
         .then(reboot.bind(this));
 }
 
-Vhost.prototype.remove = function() {
-    return disableVhost(this.hostname)
-        .then(removeVhostFile.bind(this, this.hostname))
-        .then(removeVhostFolder.bind(this, this.customer.name, this.hostname))
+Host.prototype.remove = function() {
+    return disableVhost(this.name)
+        .then(removeVhostFile.bind(this, this.name))
+        .then(removeVhostFolder.bind(this, this.customer.name, this.name))
         .then(removePool.bind(this, this))
         .then(reboot.bind(this));
 };
 
-module.exports = Vhost;
+module.exports = Host;

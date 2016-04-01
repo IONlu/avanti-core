@@ -18,15 +18,15 @@ function reboot() {
     return exec('service php7.0-fpm restart');
 }
 
-var Pool = function(vhost) {
-    this.vhost = vhost;
+var Pool = function(host) {
+    this.host = host;
 }
 
 Pool.prototype.create = function() {
     var data = ini.encode({
-        user: this.vhost.customer.name,
-        group: this.vhost.customer.name,
-        listen: '/run/php/' + this.vhost.hostname + '.sock',
+        user: this.host.customer.name,
+        group: this.host.customer.name,
+        listen: '/run/php/' + this.host.name + '.sock',
         'listen.owner': 'www-data',
         'listen.group': 'www-data',
         pm: 'dynamic',
@@ -34,16 +34,16 @@ Pool.prototype.create = function() {
         'pm.start_servers': 1,
         'pm.min_spare_servers': 1,
         'pm.max_spare_servers': 3,
-        'php_admin_value[open_basedir]': '/var/www/' + this.vhost.customer.name + '/' + this.vhost.hostname
+        'php_admin_value[open_basedir]': '/var/www/' + this.host.customer.name + '/' + this.host.name
     }, {
-        section: this.vhost.hostname
+        section: this.host.name
     });
-    return createPoolFile(this.vhost.hostname, data)
+    return createPoolFile(this.host.name, data)
         .then(reboot.bind(this));
 }
 
 Pool.prototype.remove = function() {
-    return removePoolFile(this.vhost.hostname)
+    return removePoolFile(this.host.name)
         .then(reboot.bind(this));
 }
 
