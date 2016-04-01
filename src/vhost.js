@@ -84,7 +84,7 @@ Vhost.prototype.create = function() {
         })
         .then(createVhostFolder.bind(this, this.customer.name, this.hostname))
         .then(enableVhost.bind(this, this.hostname))
-        .then(addPool.bind(this))
+        .then(addPool.bind(this, this))
         .then(reboot.bind(this));
 }
 
@@ -92,7 +92,7 @@ Vhost.prototype.remove = function() {
     return disableVhost(this.hostname)
         .then(removeVhostFile.bind(this, this.hostname))
         .then(removeVhostFolder.bind(this, this.customer.name, this.hostname))
-        .then(removePool.bind(this))
+        .then(removePool.bind(this, this))
         .then(reboot.bind(this));
 };
 
