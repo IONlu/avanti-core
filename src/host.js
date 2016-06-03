@@ -66,7 +66,7 @@ var loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
 var Host = function(customer, name) {
     this.customer = customer;
     this.name = name;
-}
+};
 
 Host.prototype.create = function() {
     var _t = this;
@@ -79,7 +79,7 @@ Host.prototype.create = function() {
         .then(enableVhost.bind(this, this.name))
         .then(addPool.bind(this, this))
         .then(Apache.restart.bind(Apache));
-}
+};
 
 Host.prototype.remove = function() {
     return disableVhost(this.name)

@@ -34,14 +34,14 @@ var Customer = function(name) {
     }
     this.name = name;
     this.hostnames = {};
-}
+};
 
 Customer.prototype.create = function() {
     return exec('useradd --home-dir /var/www/{{name}} --shell /bin/false {{name}}', {
             name: this.name
         })
         .then(createHomeFolder.bind(this, this.name));
-}
+};
 
 Customer.prototype.remove = function() {
     var _t = this;
@@ -56,14 +56,14 @@ Customer.prototype.remove = function() {
 
     // for some reason, the '--remove-home' command is not working properly, so we have to delete the home folder "manually"
     .then(removeHomeFolder.bind(this, this.name));
-}
+};
 
 Customer.prototype.addHost = function(hostname) {
     (new Host(this, hostname)).create();
-}
+};
 
 Customer.prototype.removeHost = function(hostname) {
     (new Host(this, hostname)).remove();
-}
+};
 
 module.exports = Customer;

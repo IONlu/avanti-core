@@ -20,4 +20,4 @@ function replacePlaceholders(string, params) {
 
 module.exports = function(command, params) {
     return exec(replacePlaceholders(command, params || {}));
-}
+};
