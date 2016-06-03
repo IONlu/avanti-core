@@ -1,7 +1,7 @@
 var Promise = require('bluebird'),
     ini = require('ini'),
     fs = require('fs'),
-    Apache = require('./service/Apache');
+    Fpm = require('./service/Fpm');
 
 var writeFile = Promise.promisify(fs.writeFile),
     unlink = Promise.promisify(fs.unlink);
