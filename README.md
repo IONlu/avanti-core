@@ -7,6 +7,16 @@ Controlled by [PosgreSQL](http://www.postgresql.org/) Database [events](http://w
 
 Domains get assigned a pool of PHP processes that they can spawn.
 
+## development
+
+### Vagrant box
+
+```
+    cd /path/to/avanti/repo
+    vagrant up
+    vagrant ssh
+```
+
 ## Requirements
 **For now** you need to add the _multiverse_ repository because of **libapache2-mod-fastcgi**
 
