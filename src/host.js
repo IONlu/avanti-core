@@ -2,7 +2,8 @@ var Promise = require('bluebird'),
     fs = require('fs'),
     exec = require('./exec.js'),
     Handlebars = require('handlebars'),
-    Pool = require('./pool.js');
+    Pool = require('./pool.js'),
+    Apache = require('./service/Apache');
 
 var writeFile = Promise.promisify(fs.writeFile),
     readFile = Promise.promisify(fs.readFile),
@@ -26,14 +27,6 @@ function createVhostFile(hostname, data) {
 
 function removeVhostFile(hostname) {
     return unlink('/etc/apache2/sites-available/' + hostname + '.conf');
-}
-
-function reboot() {
-    return exec('service apache2 restart');
-}
-
-function testConfig() {
-    return exec('apachectl configtest');
 }
 
 function createVhostFolder(customer, name) {
@@ -85,7 +78,7 @@ Host.prototype.create = function() {
         .then(createVhostFolder.bind(this, this.customer.name, this.name))
         .then(enableVhost.bind(this, this.name))
         .then(addPool.bind(this, this))
-        .then(reboot.bind(this));
+        .then(Apache.restart.bind(Apache));
 }
 
 Host.prototype.remove = function() {
@@ -93,7 +86,7 @@ Host.prototype.remove = function() {
         .then(removeVhostFile.bind(this, this.name))
         .then(removeVhostFolder.bind(this, this.customer.name, this.name))
         .then(removePool.bind(this, this))
-        .then(reboot.bind(this));
+        .then(Apache.restart.bind(Apache));
 };
 
 module.exports = Host;

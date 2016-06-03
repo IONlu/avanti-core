@@ -1,7 +1,7 @@
 var Promise = require('bluebird'),
     ini = require('ini'),
     fs = require('fs'),
-    exec = require('./exec.js');
+    Apache = require('./service/Apache');
 
 var writeFile = Promise.promisify(fs.writeFile),
     unlink = Promise.promisify(fs.unlink);
@@ -14,13 +14,9 @@ function removePoolFile(hostname) {
     return unlink('/etc/php/7.0/fpm/pool.d/' + hostname + '.conf');
 }
 
-function reboot() {
-    return exec('service php7.0-fpm restart');
-}
-
 var Pool = function(host) {
     this.host = host;
-}
+};
 
 Pool.prototype.create = function() {
     var data = ini.encode({
@@ -39,12 +35,12 @@ Pool.prototype.create = function() {
         section: this.host.name
     });
     return createPoolFile(this.host.name, data)
-        .then(reboot.bind(this));
-}
+        .then(Fpm.restart.bind(Fpm));
+};
 
 Pool.prototype.remove = function() {
     return removePoolFile(this.host.name)
-        .then(reboot.bind(this));
-}
+        .then(Fpm.restart.bind(Fpm));
+};
 
 module.exports = Pool;
