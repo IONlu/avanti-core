@@ -1,8 +1,8 @@
 {
-  "name": "Avanti",
+  "name": "avanti-server",
   "version": "0.1.0",
   "description": "",
-  "main": "avanti.js",
+  "main": "src/avanti.js",
   "dependencies": {
     "bluebird": "~3.3.4",
     "handlebars": "~4.0.5",
@@ -16,12 +16,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IONlu/avanti.git"
+    "url": "git+https://github.com/IONlu/avanti-server.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/IONlu/avanti/issues"
+    "url": "https://github.com/IONlu/avanti-server/issues"
   },
-  "homepage": "https://github.com/IONlu/avanti#readme"
+  "homepage": "https://github.com/IONlu/avanti-server#readme"
 }
