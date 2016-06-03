@@ -5,6 +5,7 @@
   "main": "src/avanti.js",
   "dependencies": {
     "bluebird": "~3.3.4",
+    "command-line-args": "^3.0.0",
     "handlebars": "~4.0.5",
     "ini": "^1.3.4",
     "socket.io-client": "^1.4.6",
