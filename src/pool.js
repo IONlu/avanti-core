@@ -35,12 +35,12 @@ Pool.prototype.create = function() {
         section: this.host.name
     });
     return createPoolFile(this.host.name, data)
-        .then(Fpm.restart.bind(Fpm));
+        .then(() => Fpm.restart());
 };
 
 Pool.prototype.remove = function() {
     return removePoolFile(this.host.name)
-        .then(Fpm.restart.bind(Fpm));
+        .then(() => Fpm.restart());
 };
 
 module.exports = Pool;

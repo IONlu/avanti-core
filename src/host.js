@@ -69,24 +69,23 @@ var Host = function(customer, name) {
 };
 
 Host.prototype.create = function() {
-    var _t = this;
     return loadTemplate
-        .then(function(template) {
-            var data = template(_t);
-            return createVhostFile(_t.name, data);
+        .then((template) => {
+            var data = template(this);
+            return createVhostFile(this.name, data);
         })
-        .then(createVhostFolder.bind(this, this.customer.name, this.name))
-        .then(enableVhost.bind(this, this.name))
-        .then(addPool.bind(this, this))
-        .then(Apache.restart.bind(Apache));
+        .then(() => createVhostFolder(this.customer.name, this.name))
+        .then(() => enableVhost(this.name))
+        .then(() => addPool(this))
+        .then(() => Apache.restart());
 };
 
 Host.prototype.remove = function() {
     return disableVhost(this.name)
-        .then(removeVhostFile.bind(this, this.name))
-        .then(removeVhostFolder.bind(this, this.customer.name, this.name))
-        .then(removePool.bind(this, this))
-        .then(Apache.restart.bind(Apache));
+        .then(() => removeVhostFile(this.name))
+        .then(() => removeVhostFolder(this.customer.name, this.name))
+        .then(() => removePool(this))
+        .then(() => Apache.restart());
 };
 
 module.exports = Host;
