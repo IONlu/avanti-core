@@ -6,13 +6,13 @@ import Fpm from './service/Fpm.js';
 const writeFile = Promise.promisify(fs.writeFile);
 const unlink    = Promise.promisify(fs.unlink);
 
-async function createPoolFile(hostname, data) {
-    await writeFile('/etc/php/7.0/fpm/pool.d/' + hostname + '.conf', data);
-}
+const createPoolFile = async (hostname, data) => {
+    await writeFile(`/etc/php/7.0/fpm/pool.d/${hostname}.conf`, data);
+};
 
-async function removePoolFile(hostname) {
-    await unlink('/etc/php/7.0/fpm/pool.d/' + hostname + '.conf');
-}
+const removePoolFile = async (hostname) => {
+    await unlink(`/etc/php/7.0/fpm/pool.d/${hostname}.conf`);
+};
 
 class Pool {
     constructor(host) {
