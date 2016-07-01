@@ -1,7 +1,7 @@
 import Promise from 'bluebird';
 import ini from 'ini';
 import fs from 'fs';
-import * as Fpm from './service/Fpm.js';
+import Fpm from './service/Fpm.js';
 
 const writeFile = Promise.promisify(fs.writeFile);
 const unlink    = Promise.promisify(fs.unlink);

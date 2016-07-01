@@ -3,7 +3,7 @@ import fs from 'fs';
 import exec from './exec.js';
 import Handlebars from 'handlebars';
 import Pool from './pool.js';
-import * as Apache from './service/Apache.js';
+import Apache from './service/Apache.js';
 
 const writeFile = Promise.promisify(fs.writeFile);
 const readFile  = Promise.promisify(fs.readFile);
