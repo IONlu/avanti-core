@@ -1,46 +1,48 @@
-var Promise = require('bluebird'),
-    ini = require('ini'),
-    fs = require('fs'),
-    Fpm = require('./service/Fpm');
+import Promise from 'bluebird';
+import ini from 'ini';
+import fs from 'fs';
+import * as Fpm from './service/Fpm.js';
 
-var writeFile = Promise.promisify(fs.writeFile),
-    unlink = Promise.promisify(fs.unlink);
+const writeFile = Promise.promisify(fs.writeFile);
+const unlink    = Promise.promisify(fs.unlink);
 
-function createPoolFile(hostname, data) {
-    return writeFile('/etc/php/7.0/fpm/pool.d/' + hostname + '.conf', data);
+async function createPoolFile(hostname, data) {
+    await writeFile('/etc/php/7.0/fpm/pool.d/' + hostname + '.conf', data);
 }
 
-function removePoolFile(hostname) {
-    return unlink('/etc/php/7.0/fpm/pool.d/' + hostname + '.conf');
+async function removePoolFile(hostname) {
+    await unlink('/etc/php/7.0/fpm/pool.d/' + hostname + '.conf');
 }
 
-var Pool = function(host) {
-    this.host = host;
-};
+class Pool {
+    constructor(host) {
+        this.host = host;
+    }
 
-Pool.prototype.create = function() {
-    var data = ini.encode({
-        user: this.host.customer.name,
-        group: this.host.customer.name,
-        listen: '/run/php/' + this.host.name + '.sock',
-        'listen.owner': 'www-data',
-        'listen.group': 'www-data',
-        pm: 'dynamic',
-        'pm.max_children': 6,
-        'pm.start_servers': 1,
-        'pm.min_spare_servers': 1,
-        'pm.max_spare_servers': 3,
-        'php_admin_value[open_basedir]': '/var/www/' + this.host.customer.name + '/' + this.host.name
-    }, {
-        section: this.host.name
-    });
-    return createPoolFile(this.host.name, data)
-        .then(() => Fpm.restart());
-};
+    async create() {
+        const data = ini.encode({
+            user: this.host.customer.name,
+            group: this.host.customer.name,
+            listen: '/run/php/' + this.host.name + '.sock',
+            'listen.owner': 'www-data',
+            'listen.group': 'www-data',
+            pm: 'dynamic',
+            'pm.max_children': 6,
+            'pm.start_servers': 1,
+            'pm.min_spare_servers': 1,
+            'pm.max_spare_servers': 3,
+            'php_admin_value[open_basedir]': '/var/www/' + this.host.customer.name + '/' + this.host.name
+        }, {
+            section: this.host.name
+        });
+        await createPoolFile(this.host.name, data);
+        await Fpm.restart();
+    }
 
-Pool.prototype.remove = function() {
-    return removePoolFile(this.host.name)
-        .then(() => Fpm.restart());
-};
+    async remove() {
+        await removePoolFile(this.host.name);
+        await Fpm.restart();
+    }
+}
 
-module.exports = Pool;
+export default Pool;

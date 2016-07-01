@@ -1,15 +1,5 @@
-var exec = require('./exec.js');
+import exec from '../exec.js';
 
-module.exports = {
-    stop: function() {
-        return exec('service php7.0-fpm stop');
-    },
-
-    start: function() {
-        return exec('service php7.0-fpm start');
-    },
-
-    restart: function() {
-        return exec('service php7.0-fpm restart');
-    }
-};
+export const stop       = async () => exec('service php7.0-fpm stop');
+export const start      = async () => exec('service php7.0-fpm start');
+export const restart    = async () => exec('service php7.0-fpm restart');

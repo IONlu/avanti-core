@@ -1,5 +1,11 @@
-var Customer = require('../src/customer.js');
+import Customer from '../src/customer.js';
 
-var customer = new Customer('customer');
-customer.removeHost('customer.test');
-customer.remove();
+(async function() {
+    try {
+        var customer = new Customer('customer');
+        await customer.removeHost('customer.test');
+        await customer.remove();
+    } catch(e) {
+        console.error(e);
+    }
+})();

@@ -1,19 +1,6 @@
-var exec = require('./exec.js');
+import exec from '../exec.js';
 
-module.exports = {
-    stop: function() {
-        return exec('service apache2 stop');
-    },
-
-    start: function() {
-        return exec('service apache2 start');
-    },
-
-    restart: function() {
-        return exec('service apache2 restart');
-    },
-
-    testConfig: function() {
-        return exec('apachectl configtest');
-    }
-};
+export const stop       = async () => exec('service apache2 stop');
+export const start      = async () => exec('service apache2 start');
+export const restart    = async () => exec('service apache2 restart');
+export const testConfig = async () => exec('apachectl configtest');
