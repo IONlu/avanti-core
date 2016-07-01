@@ -27,9 +27,9 @@
         "type": "git",
         "url": "git+https://github.com/IONlu/avanti-server.git"
     },
-        "author": "",
-        "license": "MIT",
-        "bugs": {
+    "author": "",
+    "license": "MIT",
+    "bugs": {
         "url": "https://github.com/IONlu/avanti-server/issues"
     },
     "homepage": "https://github.com/IONlu/avanti-server#readme"
