@@ -23,7 +23,7 @@ class Pool {
         const data = ini.encode({
             user: this.host.customer.name,
             group: this.host.customer.name,
-            listen: '/run/php/' + this.host.name + '.sock',
+            listen: `/run/php/${this.host.name}.sock`,
             'listen.owner': 'www-data',
             'listen.group': 'www-data',
             pm: 'dynamic',
@@ -31,7 +31,9 @@ class Pool {
             'pm.start_servers': 1,
             'pm.min_spare_servers': 1,
             'pm.max_spare_servers': 3,
-            'php_admin_value[open_basedir]': '/var/www/' + this.host.customer.name + '/' + this.host.name
+            'php_admin_value[open_basedir]': `/var/www/${this.host.customer.name}/${this.host.name}`,
+            'php_admin_value[disable_functions]': 'exec,mail,passthru,popen,proc_open,show_source,shell,shell_exec,symlink,system,phpinfo',
+            'php_admin_value[sendmail_path]': `/usr/sbin/sendmail -t -i -f webmaster@${this.host.name} `
         }, {
             section: this.host.name
         });
