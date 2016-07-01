@@ -3,26 +3,18 @@ import Host from './host.js';
 
 // private functions
 
-async function createHomeFolder(name) {
-    await exec('mkdir -p /var/www/{{name}}', {
-        name: name
-    });
-    await exec('chown -R {{name}}:{{name}} /var/www/{{name}}', {
-        name: name
-    });
-}
+const createHomeFolder = async (name) => {
+    await exec('mkdir -p /var/www/{{name}}', { name });
+    await exec('chown -R {{name}}:{{name}} /var/www/{{name}}', { name });
+};
 
-async function createBackupFolder(name) {
-    await exec('mkdir -p /var/backup-www/{{name}}', {
-        name: name
-    });
-}
+const createBackupFolder = async (name) => {
+    await exec('mkdir -p /var/backup-www/{{name}}', { name });
+};
 
-async function removeHomeFolder(name) {
-    await exec('rm -fr /var/www/{{name}}', {
-        name: name
-    });
-}
+const removeHomeFolder = async (name) => {
+    await exec('rm -fr /var/www/{{name}}', { name });
+};
 
 // customer class
 
