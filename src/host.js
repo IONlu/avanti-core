@@ -9,51 +9,38 @@ const writeFile = Promise.promisify(fs.writeFile);
 const readFile  = Promise.promisify(fs.readFile);
 const unlink    = Promise.promisify(fs.unlink);
 
-async function enableVhost(hostname) {
-    await exec('a2ensite {{hostname}}', {
-        hostname: hostname
-    });
-}
+const enableVhost = async (hostname) => {
+    await exec('a2ensite {{hostname}}', { hostname });
+};
 
-async function disableVhost(hostname) {
-    await exec('a2dissite {{hostname}}', {
-        hostname: hostname
-    });
-}
+const disableVhost = async (hostname) => {
+    await exec('a2dissite {{hostname}}', { hostname });
+};
 
-async function createVhostFile(hostname, data) {
-    await writeFile('/etc/apache2/sites-available/' + hostname + '.conf', data);
-}
+const createVhostFile = async (hostname, data) => {
+    await writeFile(`/etc/apache2/sites-available/${hostname}.conf`, data);
+};
 
-async function removeVhostFile(hostname) {
-    await unlink('/etc/apache2/sites-available/' + hostname + '.conf');
-}
+const removeVhostFile = async (hostname) => {
+    await unlink(`/etc/apache2/sites-available/${hostname}.conf`);
+};
 
-async function createVhostFolder(customer, name) {
-    await exec('mkdir -p /var/www/{{customer}}/{{name}}', {
-        name: name,
-        customer: customer
-    });
-    await exec('chown -R {{customer}}:{{customer}} /var/www/{{customer}}/{{name}}', {
-        name: name,
-        customer: customer
-    });
-}
+const createVhostFolder = async (customer, name) => {
+    await exec('mkdir -p /var/www/{{customer}}/{{name}}', { name, customer });
+    await exec('chown -R {{customer}}:{{customer}} /var/www/{{customer}}/{{name}}', { name, customer });
+};
 
-async function removeVhostFolder(customer, name) {
-    await exec('rm -fr /var/www/{{customer}}/{{name}}', {
-        name: name,
-        customer: customer
-    });
-}
+const removeVhostFolder = async (customer, name) => {
+    await exec('rm -fr /var/www/{{customer}}/{{name}}', { name, customer });
+};
 
-async function addPool(host) {
+const addPool = async (host) => {
     await (new Pool(host)).create();
-}
+};
 
-async function removePool(host) {
+const removePool = async (host) => {
     await (new Pool(host)).remove();
-}
+};
 
 // load and compile vhost template
 const loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
