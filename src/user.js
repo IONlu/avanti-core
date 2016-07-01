@@ -26,4 +26,4 @@ const remove = async (name, backupFolder) => {
     await exec('rm -fr {{homeFolder}}', { homeFolder });
 };
 
-export { exists, create, remove };
+export { home, exists, create, remove };
