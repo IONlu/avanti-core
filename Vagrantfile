@@ -42,18 +42,12 @@ Vagrant.configure(2) do |config|
         apt-get update
         apt-get -y upgrade
 
-        apt-get -y install apache2 cronolog letsencrypt
+        apt-get -y install apache2 cronolog letsencrypt sqlite3
         apt-get -y install php php-fpm libapache2-mod-fastcgi
         apt-get -y install nodejs npm
         a2enmod rewrite proxy proxy_fcgi
 
-        npm install -g pm2
-
         cd /opt/avanti && npm install
-
-        ln -s /usr/bin/nodejs /usr/local/bin/node
-
-        runuser -l ubuntu -c 'pm2 start /opt/avanti/src/avanti.js --watch'
 
         locale-gen en_GB.UTF-8
         echo 'Host *\nUser #{user}' >> /home/ubuntu/.ssh/config
