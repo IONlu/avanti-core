@@ -20,7 +20,7 @@ const removeHomeFolder = async (name) => {
 
 class Customer {
     constructor(name) {
-        if (name.length > 16 || name.match(/[^a-z0-9]/i)) {
+        if (name.length > 32 || !name.match(/^[a-z][-a-z0-9_]*$/)) {
             throw `invalid customer name "${name}"`;
         }
         this.name = name;
