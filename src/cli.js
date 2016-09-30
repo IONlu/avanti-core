@@ -1,9 +1,10 @@
 import commander from 'commander';
+import packageJson from '../package.json';
 import * as Customer from './cli/customer.js';
 import * as Host from './cli/host.js';
 
 commander
-    .version('0.1.0');
+    .version(packageJson.version);
 
 commander
     .command('customer <action> <customer>')
