@@ -6,3 +6,9 @@ gulp.task('build', () =>
         .pipe(babel())
         .pipe(gulp.dest('dist'))
 );
+
+gulp.task('watch', () =>
+    gulp.watch('src/**/*.js', ['build'])
+);
+
+gulp.task('default', ['build', 'watch']);
