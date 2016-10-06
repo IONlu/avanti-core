@@ -1,4 +1,4 @@
-import Customer from '../../src/customer.js';
+import Customer from '../customer.js';
 
 const create = async (customer, hostname) => {
     try {

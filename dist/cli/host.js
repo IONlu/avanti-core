@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.remove = exports.create = undefined;
 
-var _customer = require('../../src/customer.js');
+var _customer = require('../customer.js');
 
 var _customer2 = _interopRequireDefault(_customer);
 
