@@ -70,7 +70,7 @@ const create = (() => {
             throw 'invalid username "' + name + '"';
         }
         if (!(yield exists(name))) {
-            yield (0, _exec2.default)('useradd --home-dir /var/www/{{name}} --shell /bin/false {{name}}', { name: name });
+            yield (0, _exec2.default)('useradd --home-dir /var/www/vhost/{{name}} --shell /bin/false {{name}}', { name: name });
         }
     });
 

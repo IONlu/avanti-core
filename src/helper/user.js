@@ -47,7 +47,7 @@ const create = async (name) => {
         throw 'invalid username "' + name + '"';
     }
     if (! await exists(name)) {
-        await exec('useradd --home-dir /var/www/{{name}} --shell /bin/false {{name}}', { name });
+        await exec('useradd --home-dir /var/www/vhost/{{name}} --shell /bin/false {{name}}', { name });
     }
 };
 

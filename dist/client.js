@@ -30,33 +30,13 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const createHomeFolder = (() => {
     var _ref = _asyncToGenerator(function* (name) {
-        yield (0, _exec2.default)('mkdir -p /var/www/{{name}}', { name: name });
+        yield (0, _exec2.default)('mkdir -p /var/www/vhost/{{name}}', { name: name });
         yield (0, _exec2.default)('chown -R {{name}}:{{name}} /var/www/{{name}}', { name: name });
         return `/var/www/${ name }`;
     });
 
     return function createHomeFolder(_x) {
         return _ref.apply(this, arguments);
-    };
-})();
-
-const createBackupFolder = (() => {
-    var _ref2 = _asyncToGenerator(function* (name) {
-        yield (0, _exec2.default)('mkdir -p /var/backup-www/{{name}}', { name: name });
-    });
-
-    return function createBackupFolder(_x2) {
-        return _ref2.apply(this, arguments);
-    };
-})();
-
-const removeHomeFolder = (() => {
-    var _ref3 = _asyncToGenerator(function* (name) {
-        yield (0, _exec2.default)('rm -fr /var/www/{{name}}', { name: name });
-    });
-
-    return function removeHomeFolder(_x3) {
-        return _ref3.apply(this, arguments);
     };
 })();
 

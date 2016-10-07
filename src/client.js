@@ -6,17 +6,9 @@ import Registry from './registry.js';
 // private functions
 
 const createHomeFolder = async (name) => {
-    await exec('mkdir -p /var/www/{{name}}', { name });
+    await exec('mkdir -p /var/www/vhost/{{name}}', { name });
     await exec('chown -R {{name}}:{{name}} /var/www/{{name}}', { name });
     return `/var/www/${name}`;
-};
-
-const createBackupFolder = async (name) => {
-    await exec('mkdir -p /var/backup-www/{{name}}', { name });
-};
-
-const removeHomeFolder = async (name) => {
-    await exec('rm -fr /var/www/{{name}}', { name });
 };
 
 // client class
