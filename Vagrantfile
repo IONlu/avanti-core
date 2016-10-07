@@ -27,17 +27,7 @@ Vagrant.configure(2) do |config|
     # Setting locale
     ENV["LC_ALL"] = "en_GB.UTF-8"
 
-    config.ssh.insert_key = false
-    config.ssh.private_key_path = ['~/.ssh/vagrant', '~/.vagrant.d/insecure_private_key']
-    config.ssh.forward_agent = true
-
-    user = ENV['USER']
-    home = ENV['HOME']
-    public_key = IO.read(home + '/.ssh/vagrant.pub')
     config.vm.provision "base", type: "shell", :inline => <<-SCRIPT
-        echo '#{public_key}' > /home/ubuntu/.ssh/authorized_keys
-        chmod 600 /home/ubuntu/.ssh/authorized_keys
-
         apt-get -y autoremove
         apt-get update
         apt-get -y upgrade
@@ -50,7 +40,6 @@ Vagrant.configure(2) do |config|
         cd /opt/avanti && npm install
 
         locale-gen en_GB.UTF-8
-        echo 'Host *\nUser #{user}' >> /home/ubuntu/.ssh/config
     SCRIPT
 
     config.ssh.forward_agent = true
