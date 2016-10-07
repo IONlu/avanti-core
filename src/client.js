@@ -28,16 +28,20 @@ class Client {
         this.db = Registry.get('Database');
     }
 
-    async exists() {
+    async info() {
         let result = await this.db.get(`
-            SELECT "client"
+            SELECT *
             FROM "client"
             WHERE "client" = :client
             LIMIT 1
         `, {
             ':client': this.name
         });
-        return result && result.client;
+        return result;
+    }
+
+    async exists() {
+        return !! await this.info();
     }
 
     async create() {
@@ -71,15 +75,22 @@ class Client {
     }
 
     async remove() {
-        await createBackupFolder(this.name);
+        const info = await this.info();
+        if (!info) {
+            return;
+        }
 
-        // generate a compressed backup of the client's home folder and then remove the home folder
-        await exec('deluser --backup --backup-to /var/backup-www/{{name}} --remove-home {{name}}', {
-            name: this.name
+        await this.db.run(`
+            DELETE
+            FROM "client"
+            WHERE "client" = :client
+        `, {
+            ':client': this.name
         });
 
-        // for some reason, the '--remove-home' command is not working properly, so we have to delete the home folder "manually"
-        await removeHomeFolder(this.name);
+        console.warn('TODO: delete all hosts for this user');
+
+        await User.remove(info.user, `/var/www/backup/${info.user}`);
     }
 
     async addHost(hostname) {

@@ -69,32 +69,40 @@ class Client {
         this.db = _registry2.default.get('Database');
     }
 
-    exists() {
+    info() {
         var _this = this;
 
         return _asyncToGenerator(function* () {
             let result = yield _this.db.get(`
-            SELECT "client"
+            SELECT *
             FROM "client"
             WHERE "client" = :client
             LIMIT 1
         `, {
                 ':client': _this.name
             });
-            return result && result.client;
+            return result;
+        })();
+    }
+
+    exists() {
+        var _this2 = this;
+
+        return _asyncToGenerator(function* () {
+            return !!(yield _this2.info());
         })();
     }
 
     create() {
-        var _this2 = this;
+        var _this3 = this;
 
         return _asyncToGenerator(function* () {
-            if (yield _this2.exists()) {
+            if (yield _this3.exists()) {
                 return;
             }
 
             // find free username
-            const convertedUser = yield User.convert(_this2.name);
+            const convertedUser = yield User.convert(_this3.name);
             var user = convertedUser;
             var index = 0;
             while (yield User.exists(user)) {
@@ -105,14 +113,14 @@ class Client {
             yield User.create(user);
             const home = yield createHomeFolder(user);
 
-            yield _this2.db.run(`
+            yield _this3.db.run(`
             INSERT
             INTO "client"
               ("client", "user", "path")
             VALUES
               (:client, :user, :path)
         `, {
-                ':client': _this2.name,
+                ':client': _this3.name,
                 ':user': user,
                 ':path': home
             });
@@ -120,34 +128,41 @@ class Client {
     }
 
     remove() {
-        var _this3 = this;
+        var _this4 = this;
 
         return _asyncToGenerator(function* () {
-            yield createBackupFolder(_this3.name);
+            const info = yield _this4.info();
+            if (!info) {
+                return;
+            }
 
-            // generate a compressed backup of the client's home folder and then remove the home folder
-            yield (0, _exec2.default)('deluser --backup --backup-to /var/backup-www/{{name}} --remove-home {{name}}', {
-                name: _this3.name
+            yield _this4.db.run(`
+            DELETE
+            FROM "client"
+            WHERE "client" = :client
+        `, {
+                ':client': _this4.name
             });
 
-            // for some reason, the '--remove-home' command is not working properly, so we have to delete the home folder "manually"
-            yield removeHomeFolder(_this3.name);
+            console.warn('TODO: delete all hosts for this user');
+
+            yield User.remove(info.user, `/var/www/backup/${ info.user }`);
         })();
     }
 
     addHost(hostname) {
-        var _this4 = this;
+        var _this5 = this;
 
         return _asyncToGenerator(function* () {
-            yield new _host2.default(_this4, hostname).create();
+            yield new _host2.default(_this5, hostname).create();
         })();
     }
 
     removeHost(hostname) {
-        var _this5 = this;
+        var _this6 = this;
 
         return _asyncToGenerator(function* () {
-            yield new _host2.default(_this5, hostname).remove();
+            yield new _host2.default(_this6, hostname).remove();
         })();
     }
 }
