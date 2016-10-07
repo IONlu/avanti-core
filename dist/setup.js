@@ -12,6 +12,14 @@ var _sqlite = require('sqlite3');
 
 var _sqlite2 = _interopRequireDefault(_sqlite);
 
+var _registry = require('./registry.js');
+
+var _registry2 = _interopRequireDefault(_registry);
+
+var _database = require('./database.js');
+
+var _database2 = _interopRequireDefault(_database);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -35,6 +43,9 @@ exports.default = _asyncToGenerator(function* () {
     // create folder
     yield (0, _mkdirp2.default)('/opt/avanti');
 
-    // init sqllite database
-    yield initSqlite();
+    // init sqlite db
+    var sqlite_db = yield initSqlite();
+
+    // init singletons
+    _registry2.default.set('Database', new _database2.default(sqlite_db));
 });
