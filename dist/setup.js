@@ -35,6 +35,8 @@ const initDatabase = (() => {
               "user" VARCHAR(100) NOT NULL,
               "path" VARCHAR(200) NOT NULL,
               PRIMARY KEY ("client"));
+        `).then(function () {
+                return database.run(`
             CREATE TABLE IF NOT EXISTS "host" (
               "host" VARCHAR(100) NOT NULL,
               "client" VARCHAR(100) NOT NULL,
@@ -42,7 +44,8 @@ const initDatabase = (() => {
               "path" VARCHAR(200) NOT NULL,
               PRIMARY KEY ("host"));
         `).then(function () {
-                return resolve(database);
+                    return resolve(database);
+                });
             });
         });
     });

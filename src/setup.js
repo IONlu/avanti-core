@@ -13,13 +13,14 @@ const initDatabase = async () => {
               "user" VARCHAR(100) NOT NULL,
               "path" VARCHAR(200) NOT NULL,
               PRIMARY KEY ("client"));
+        `).then(() => database.run(`
             CREATE TABLE IF NOT EXISTS "host" (
               "host" VARCHAR(100) NOT NULL,
               "client" VARCHAR(100) NOT NULL,
               "user" VARCHAR(100) NOT NULL,
               "path" VARCHAR(200) NOT NULL,
               PRIMARY KEY ("host"));
-        `).then(() => resolve(database));
+        `).then(() => resolve(database)));
     });
 };
 

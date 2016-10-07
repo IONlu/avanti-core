@@ -5,7 +5,7 @@ import Handlebars from 'handlebars';
 import Pool from './pool.js';
 import Apache from './service/Apache.js';
 import Registry from './registry.js';
-import User from './helper/user.js';
+import * as User from './helper/user.js';
 
 const writeFile = Promise.promisify(fs.writeFile);
 const readFile  = Promise.promisify(fs.readFile);
@@ -84,7 +84,7 @@ class Host {
         const user = await User.free(this.name);
 
         // create user
-        const clientInfo = this.client.info();
+        const clientInfo = await this.client.info();
         const documentRoot = `${clientInfo.path}/${user}`;
         await User.create(user, documentRoot);
 
@@ -93,7 +93,6 @@ class Host {
         await createVhostFile(this.name, data);
         await createVhostFolder(documentRoot, user);
         await enableVhost(this.name);
-        await addPool(this);
 
         await this.db.run(`
             INSERT
@@ -107,6 +106,8 @@ class Host {
             ':user': user,
             ':path': documentRoot
         });
+
+        await addPool(this);
 
         await Apache.restart();
     }

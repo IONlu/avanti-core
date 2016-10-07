@@ -34,7 +34,9 @@ var _registry2 = _interopRequireDefault(_registry);
 
 var _user = require('./helper/user.js');
 
-var _user2 = _interopRequireDefault(_user);
+var User = _interopRequireWildcard(_user);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -172,19 +174,18 @@ class Host {
             }
 
             // find free username
-            const user = yield _user2.default.free(_this3.name);
+            const user = yield User.free(_this3.name);
 
             // create user
-            const clientInfo = _this3.client.info();
+            const clientInfo = yield _this3.client.info();
             const documentRoot = `${ clientInfo.path }/${ user }`;
-            yield _user2.default.create(user, documentRoot);
+            yield User.create(user, documentRoot);
 
             let template = yield loadTemplate;
             let data = template(Object.assign(_this3, { user: user, documentRoot: documentRoot }));
             yield createVhostFile(_this3.name, data);
             yield createVhostFolder(documentRoot, user);
             yield enableVhost(_this3.name);
-            yield addPool(_this3);
 
             yield _this3.db.run(`
             INSERT
@@ -198,6 +199,8 @@ class Host {
                 ':user': user,
                 ':path': documentRoot
             });
+
+            yield addPool(_this3);
 
             yield _Apache2.default.restart();
         })();

@@ -56,10 +56,12 @@ class Pool {
         var _this = this;
 
         return _asyncToGenerator(function* () {
+            const hostInfo = yield _this.host.info();
+
             const data = _ini2.default.encode({
-                user: _this.host.client.name,
-                group: _this.host.client.name,
-                listen: `/run/php/${ _this.host.name }.sock`,
+                user: hostInfo.user,
+                group: hostInfo.user,
+                listen: `/run/php/${ hostInfo.user }.sock`,
                 'listen.owner': 'www-data',
                 'listen.group': 'www-data',
                 pm: 'dynamic',
@@ -67,7 +69,7 @@ class Pool {
                 'pm.start_servers': 1,
                 'pm.min_spare_servers': 1,
                 'pm.max_spare_servers': 3,
-                'php_admin_value[open_basedir]': `/var/www/${ _this.host.client.name }/${ _this.host.name }`,
+                'php_admin_value[open_basedir]': `${ hostInfo.path }`,
                 'php_admin_value[disable_functions]': 'exec,mail,passthru,popen,proc_open,show_source,shell,shell_exec,symlink,system,phpinfo',
                 'php_admin_value[sendmail_path]': `/usr/sbin/sendmail -t -i -f webmaster@${ _this.host.name } `
             }, {

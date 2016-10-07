@@ -29,13 +29,12 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 // private functions
 
 const createHomeFolder = (() => {
-    var _ref = _asyncToGenerator(function* (name) {
-        yield (0, _exec2.default)('mkdir -p /var/www/vhost/{{name}}', { name: name });
-        yield (0, _exec2.default)('chown -R {{name}}:{{name}} /var/www/{{name}}', { name: name });
-        return `/var/www/${ name }`;
+    var _ref = _asyncToGenerator(function* (name, home) {
+        yield (0, _exec2.default)('mkdir -p {{home}}', { home: home });
+        yield (0, _exec2.default)('chown -R {{name}}:{{name}} {{home}}', { name: name, home: home });
     });
 
-    return function createHomeFolder(_x) {
+    return function createHomeFolder(_x, _x2) {
         return _ref.apply(this, arguments);
     };
 })();
@@ -84,8 +83,9 @@ class Client {
             // find free username
             const user = yield User.free(_this3.name);
 
-            yield User.create(user, `/var/www/vhost/${ user }`);
-            const home = yield createHomeFolder(user);
+            const home = `/var/www/vhost/${ user }`;
+            yield User.create(user, home);
+            yield createHomeFolder(user, home);
 
             yield _this3.db.run(`
             INSERT

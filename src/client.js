@@ -5,10 +5,9 @@ import Registry from './registry.js';
 
 // private functions
 
-const createHomeFolder = async (name) => {
-    await exec('mkdir -p /var/www/vhost/{{name}}', { name });
-    await exec('chown -R {{name}}:{{name}} /var/www/{{name}}', { name });
-    return `/var/www/${name}`;
+const createHomeFolder = async (name, home) => {
+    await exec('mkdir -p {{home}}', { home });
+    await exec('chown -R {{name}}:{{name}} {{home}}', { name, home });
 };
 
 // client class
@@ -44,8 +43,9 @@ class Client {
         // find free username
         const user = await User.free(this.name);
 
-        await User.create(user, `/var/www/vhost/${user}`);
-        const home = await createHomeFolder(user);
+        const home = `/var/www/vhost/${user}`;
+        await User.create(user, home);
+        await createHomeFolder(user, home);
 
         await this.db.run(`
             INSERT
