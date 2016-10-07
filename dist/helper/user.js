@@ -52,7 +52,7 @@ const remove = (() => {
         if (backupFolder) {
             yield (0, _exec2.default)('mkdir -p {{backupFolder}}', { backupFolder: backupFolder });
 
-            // generate a compressed backup of the customer's home folder and then remove the home folder
+            // generate a compressed backup of the client's home folder and then remove the home folder
             yield (0, _exec2.default)('deluser --backup --backup-to {{backupFolder}} --remove-home {{name}}', { name: name, backupFolder: backupFolder });
         } else {
             yield (0, _exec2.default)('deluser --backup --remove-home {{name}}', { name: name });

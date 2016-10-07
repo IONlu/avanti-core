@@ -49,12 +49,12 @@ const removeHomeFolder = (() => {
     };
 })();
 
-// customer class
+// client class
 
-class Customer {
+class Client {
     constructor(name) {
         if (name.length > 32 || !name.match(/^[a-z][-a-z0-9_]*$/)) {
-            throw `invalid customer name "${ name }"`;
+            throw `invalid client name "${ name }"`;
         }
         this.name = name;
         this.hostnames = {};
@@ -77,7 +77,7 @@ class Customer {
         return _asyncToGenerator(function* () {
             yield createBackupFolder(_this2.name);
 
-            // generate a compressed backup of the customer's home folder and then remove the home folder
+            // generate a compressed backup of the client's home folder and then remove the home folder
             yield (0, _exec2.default)('deluser --backup --backup-to /var/backup-www/{{name}} --remove-home {{name}}', {
                 name: _this2.name
             });
@@ -104,4 +104,4 @@ class Customer {
     }
 }
 
-exports.default = Customer;
+exports.default = Client;

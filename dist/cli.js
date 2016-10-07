@@ -12,9 +12,9 @@ var _package = require('../package.json');
 
 var _package2 = _interopRequireDefault(_package);
 
-var _customer = require('./cli/customer.js');
+var _client = require('./cli/client.js');
 
-var Customer = _interopRequireWildcard(_customer);
+var Client = _interopRequireWildcard(_client);
 
 var _host = require('./cli/host.js');
 
@@ -28,12 +28,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
     _commander2.default.version(_package2.default.version);
 
-    _commander2.default.command('customer <action> <customer>').action(function (action, customer) {
-        Customer[action](customer);
+    _commander2.default.command('client <action> <client>').action(function (action, client) {
+        Client[action](client);
     });
 
-    _commander2.default.command('host <action> <customer> <hostname>').action(function (action, customer, hostname) {
-        Host[action](customer, hostname);
+    _commander2.default.command('host <action> <client> <hostname>').action(function (action, client, hostname) {
+        Host[action](client, hostname);
     });
 
     _commander2.default.parse(process.argv);

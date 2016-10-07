@@ -16,12 +16,12 @@ const removeHomeFolder = async (name) => {
     await exec('rm -fr /var/www/{{name}}', { name });
 };
 
-// customer class
+// client class
 
-class Customer {
+class Client {
     constructor(name) {
         if (name.length > 32 || !name.match(/^[a-z][-a-z0-9_]*$/)) {
-            throw `invalid customer name "${name}"`;
+            throw `invalid client name "${name}"`;
         }
         this.name = name;
         this.hostnames = {};
@@ -37,7 +37,7 @@ class Customer {
     async remove() {
         await createBackupFolder(this.name);
 
-        // generate a compressed backup of the customer's home folder and then remove the home folder
+        // generate a compressed backup of the client's home folder and then remove the home folder
         await exec('deluser --backup --backup-to /var/backup-www/{{name}} --remove-home {{name}}', {
             name: this.name
         });
@@ -55,4 +55,4 @@ class Customer {
     }
 }
 
-export default Customer;
+export default Client;

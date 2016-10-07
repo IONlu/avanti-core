@@ -16,7 +16,7 @@ const remove = async (name, backupFolder) => {
     if (backupFolder) {
         await exec('mkdir -p {{backupFolder}}', { backupFolder });
 
-        // generate a compressed backup of the customer's home folder and then remove the home folder
+        // generate a compressed backup of the client's home folder and then remove the home folder
         await exec('deluser --backup --backup-to {{backupFolder}} --remove-home {{name}}', { name, backupFolder });
     } else {
         await exec('deluser --backup --remove-home {{name}}', { name });

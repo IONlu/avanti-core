@@ -77,9 +77,9 @@ const removeVhostFile = (() => {
 })();
 
 const createVhostFolder = (() => {
-    var _ref5 = _asyncToGenerator(function* (customer, name) {
-        yield (0, _exec2.default)('mkdir -p /var/www/{{customer}}/{{name}}', { name: name, customer: customer });
-        yield (0, _exec2.default)('chown -R {{customer}}:{{customer}} /var/www/{{customer}}/{{name}}', { name: name, customer: customer });
+    var _ref5 = _asyncToGenerator(function* (client, name) {
+        yield (0, _exec2.default)('mkdir -p /var/www/{{client}}/{{name}}', { name: name, client: client });
+        yield (0, _exec2.default)('chown -R {{client}}:{{client}} /var/www/{{client}}/{{name}}', { name: name, client: client });
     });
 
     return function createVhostFolder(_x6, _x7) {
@@ -88,8 +88,8 @@ const createVhostFolder = (() => {
 })();
 
 const removeVhostFolder = (() => {
-    var _ref6 = _asyncToGenerator(function* (customer, name) {
-        yield (0, _exec2.default)('rm -fr /var/www/{{customer}}/{{name}}', { name: name, customer: customer });
+    var _ref6 = _asyncToGenerator(function* (client, name) {
+        yield (0, _exec2.default)('rm -fr /var/www/{{client}}/{{name}}', { name: name, client: client });
     });
 
     return function removeVhostFolder(_x8, _x9) {
@@ -123,8 +123,8 @@ const loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8').then(
 });
 
 class Host {
-    constructor(customer, name) {
-        this.customer = customer;
+    constructor(client, name) {
+        this.client = client;
         this.name = name;
     }
 
@@ -135,7 +135,7 @@ class Host {
             let template = yield loadTemplate;
             let data = template(_this);
             yield createVhostFile(_this.name, data);
-            yield createVhostFolder(_this.customer.name, _this.name);
+            yield createVhostFolder(_this.client.name, _this.name);
             yield enableVhost(_this.name);
             yield addPool(_this);
             yield _Apache2.default.restart();
@@ -148,7 +148,7 @@ class Host {
         return _asyncToGenerator(function* () {
             yield disableVhost(_this2.name);
             yield removeVhostFile(_this2.name);
-            yield removeVhostFolder(_this2.customer.name, _this2.name);
+            yield removeVhostFolder(_this2.client.name, _this2.name);
             yield removePool(_this2);
             yield _Apache2.default.restart();
         })();

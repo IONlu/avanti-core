@@ -25,13 +25,13 @@ const removeVhostFile = async (hostname) => {
     await unlink(`/etc/apache2/sites-available/${hostname}.conf`);
 };
 
-const createVhostFolder = async (customer, name) => {
-    await exec('mkdir -p /var/www/{{customer}}/{{name}}', { name, customer });
-    await exec('chown -R {{customer}}:{{customer}} /var/www/{{customer}}/{{name}}', { name, customer });
+const createVhostFolder = async (client, name) => {
+    await exec('mkdir -p /var/www/{{client}}/{{name}}', { name, client });
+    await exec('chown -R {{client}}:{{client}} /var/www/{{client}}/{{name}}', { name, client });
 };
 
-const removeVhostFolder = async (customer, name) => {
-    await exec('rm -fr /var/www/{{customer}}/{{name}}', { name, customer });
+const removeVhostFolder = async (client, name) => {
+    await exec('rm -fr /var/www/{{client}}/{{name}}', { name, client });
 };
 
 const addPool = async (host) => {
@@ -49,8 +49,8 @@ const loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
     });
 
 class Host {
-    constructor(customer, name) {
-        this.customer = customer;
+    constructor(client, name) {
+        this.client = client;
         this.name = name;
     }
 
@@ -58,7 +58,7 @@ class Host {
         let template = await loadTemplate;
         let data = template(this);
         await createVhostFile(this.name, data);
-        await createVhostFolder(this.customer.name, this.name);
+        await createVhostFolder(this.client.name, this.name);
         await enableVhost(this.name);
         await addPool(this);
         await Apache.restart();
@@ -67,7 +67,7 @@ class Host {
     async remove() {
         await disableVhost(this.name);
         await removeVhostFile(this.name);
-        await removeVhostFolder(this.customer.name, this.name);
+        await removeVhostFolder(this.client.name, this.name);
         await removePool(this);
         await Apache.restart();
     }
