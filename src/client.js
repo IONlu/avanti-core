@@ -43,7 +43,7 @@ class Client {
         // find free username
         const user = await User.free(this.name);
 
-        const home = `/var/www/vhost/${user}`;
+        const home = `/var/www/vhosts/${user}`;
         await User.create(user, home);
         await createHomeFolder(user, home);
 

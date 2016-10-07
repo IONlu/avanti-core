@@ -29,11 +29,15 @@ const removeVhostFile = async (hostname) => {
 
 const createVhostFolder = async (path, user) => {
     await exec('mkdir -p {{path}}', { path });
+    await exec('mkdir -p {{path}}', { path: path + '/temp' });
+    await exec('mkdir -p {{path}}', { path: path + '/logs' });
+    await exec('mkdir -p {{path}}', { path: path + '/sessions' });
+    await exec('mkdir -p {{path}}', { path: path + '/web' });
     await exec('chown -R {{user}}:{{user}} {{path}}', { path, user });
 };
 
 const removeVhostFolder = async (path) => {
-    await exec('rm -fr /var/www/{{path}}', { path });
+    await exec('rm -fr {{path}}', { path });
 };
 
 const addPool = async (host) => {
@@ -85,13 +89,14 @@ class Host {
 
         // create user
         const clientInfo = await this.client.info();
-        const documentRoot = `${clientInfo.path}/${user}`;
-        await User.create(user, documentRoot);
+        const home = `${clientInfo.path}/${user}`;
+        await User.create(user, home);
 
+        const documentRoot = `${home}/web`;
         let template = await loadTemplate;
         let data = template(Object.assign(this, { user, documentRoot }));
         await createVhostFile(this.name, data);
-        await createVhostFolder(documentRoot, user);
+        await createVhostFolder(home, user);
         await enableVhost(this.name);
 
         await this.db.run(`
@@ -104,7 +109,7 @@ class Host {
             ':host': this.name,
             ':client': this.client.name,
             ':user': user,
-            ':path': documentRoot
+            ':path': home
         });
 
         await addPool(this);

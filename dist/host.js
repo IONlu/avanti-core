@@ -89,6 +89,10 @@ const removeVhostFile = (() => {
 const createVhostFolder = (() => {
     var _ref5 = _asyncToGenerator(function* (path, user) {
         yield (0, _exec2.default)('mkdir -p {{path}}', { path: path });
+        yield (0, _exec2.default)('mkdir -p {{path}}', { path: path + '/temp' });
+        yield (0, _exec2.default)('mkdir -p {{path}}', { path: path + '/logs' });
+        yield (0, _exec2.default)('mkdir -p {{path}}', { path: path + '/sessions' });
+        yield (0, _exec2.default)('mkdir -p {{path}}', { path: path + '/web' });
         yield (0, _exec2.default)('chown -R {{user}}:{{user}} {{path}}', { path: path, user: user });
     });
 
@@ -99,7 +103,7 @@ const createVhostFolder = (() => {
 
 const removeVhostFolder = (() => {
     var _ref6 = _asyncToGenerator(function* (path) {
-        yield (0, _exec2.default)('rm -fr /var/www/{{path}}', { path: path });
+        yield (0, _exec2.default)('rm -fr {{path}}', { path: path });
     });
 
     return function removeVhostFolder(_x8) {
@@ -178,13 +182,14 @@ class Host {
 
             // create user
             const clientInfo = yield _this3.client.info();
-            const documentRoot = `${ clientInfo.path }/${ user }`;
-            yield User.create(user, documentRoot);
+            const home = `${ clientInfo.path }/${ user }`;
+            yield User.create(user, home);
 
+            const documentRoot = `${ home }/web`;
             let template = yield loadTemplate;
             let data = template(Object.assign(_this3, { user: user, documentRoot: documentRoot }));
             yield createVhostFile(_this3.name, data);
-            yield createVhostFolder(documentRoot, user);
+            yield createVhostFolder(home, user);
             yield enableVhost(_this3.name);
 
             yield _this3.db.run(`
@@ -197,7 +202,7 @@ class Host {
                 ':host': _this3.name,
                 ':client': _this3.client.name,
                 ':user': user,
-                ':path': documentRoot
+                ':path': home
             });
 
             yield addPool(_this3);

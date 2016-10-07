@@ -34,6 +34,7 @@ class Pool {
             'pm.min_spare_servers': 1,
             'pm.max_spare_servers': 3,
             'php_admin_value[open_basedir]': `${hostInfo.path}`,
+            'php_admin_value[session.save_path]': `${hostInfo.path}/sessions`,
             'php_admin_value[disable_functions]': 'exec,mail,passthru,popen,proc_open,show_source,shell,shell_exec,symlink,system,phpinfo',
             'php_admin_value[sendmail_path]': `/usr/sbin/sendmail -t -i -f webmaster@${this.host.name} `
         }, {
