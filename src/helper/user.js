@@ -42,12 +42,12 @@ const exists = async (name) => {
 };
 
 // creates a user if valid
-const create = async (name) => {
+const create = async (name, home) => {
     if (! validate(name)) {
         throw 'invalid username "' + name + '"';
     }
     if (! await exists(name)) {
-        await exec('useradd --home-dir /var/www/vhost/{{name}} --shell /bin/false {{name}}', { name });
+        await exec('useradd --home-dir {{home}} --shell /bin/false {{name}}', { name, home });
     }
 };
 

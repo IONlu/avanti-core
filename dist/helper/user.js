@@ -65,16 +65,16 @@ const exists = (() => {
 
 // creates a user if valid
 const create = (() => {
-    var _ref3 = _asyncToGenerator(function* (name) {
+    var _ref3 = _asyncToGenerator(function* (name, home) {
         if (!validate(name)) {
             throw 'invalid username "' + name + '"';
         }
         if (!(yield exists(name))) {
-            yield (0, _exec2.default)('useradd --home-dir /var/www/vhost/{{name}} --shell /bin/false {{name}}', { name: name });
+            yield (0, _exec2.default)('useradd --home-dir {{home}} --shell /bin/false {{name}}', { name: name, home: home });
         }
     });
 
-    return function create(_x3) {
+    return function create(_x3, _x4) {
         return _ref3.apply(this, arguments);
     };
 })();
@@ -101,7 +101,7 @@ const remove = (() => {
         yield (0, _exec2.default)('rm -fr {{homeFolder}}', { homeFolder: homeFolder });
     });
 
-    return function remove(_x4, _x5) {
+    return function remove(_x5, _x6) {
         return _ref4.apply(this, arguments);
     };
 })();
@@ -119,7 +119,7 @@ const free = (() => {
         return freeUser;
     });
 
-    return function free(_x6) {
+    return function free(_x7) {
         return _ref5.apply(this, arguments);
     };
 })();

@@ -84,7 +84,7 @@ class Client {
             // find free username
             const user = yield User.free(_this3.name);
 
-            yield User.create(user);
+            yield User.create(user, `/var/www/vhost/${ user }`);
             const home = yield createHomeFolder(user);
 
             yield _this3.db.run(`

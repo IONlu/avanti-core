@@ -28,6 +28,14 @@ var _Apache = require('./service/Apache.js');
 
 var _Apache2 = _interopRequireDefault(_Apache);
 
+var _registry = require('./registry.js');
+
+var _registry2 = _interopRequireDefault(_registry);
+
+var _user = require('./helper/user.js');
+
+var _user2 = _interopRequireDefault(_user);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _bluebird2.default.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -77,9 +85,9 @@ const removeVhostFile = (() => {
 })();
 
 const createVhostFolder = (() => {
-    var _ref5 = _asyncToGenerator(function* (client, name) {
-        yield (0, _exec2.default)('mkdir -p /var/www/{{client}}/{{name}}', { name: name, client: client });
-        yield (0, _exec2.default)('chown -R {{client}}:{{client}} /var/www/{{client}}/{{name}}', { name: name, client: client });
+    var _ref5 = _asyncToGenerator(function* (path, user) {
+        yield (0, _exec2.default)('mkdir -p {{path}}', { path: path });
+        yield (0, _exec2.default)('chown -R {{user}}:{{user}} {{path}}', { path: path, user: user });
     });
 
     return function createVhostFolder(_x6, _x7) {
@@ -88,11 +96,11 @@ const createVhostFolder = (() => {
 })();
 
 const removeVhostFolder = (() => {
-    var _ref6 = _asyncToGenerator(function* (client, name) {
-        yield (0, _exec2.default)('rm -fr /var/www/{{client}}/{{name}}', { name: name, client: client });
+    var _ref6 = _asyncToGenerator(function* (path) {
+        yield (0, _exec2.default)('rm -fr /var/www/{{path}}', { path: path });
     });
 
-    return function removeVhostFolder(_x8, _x9) {
+    return function removeVhostFolder(_x8) {
         return _ref6.apply(this, arguments);
     };
 })();
@@ -102,7 +110,7 @@ const addPool = (() => {
         yield new _pool2.default(host).create();
     });
 
-    return function addPool(_x10) {
+    return function addPool(_x9) {
         return _ref7.apply(this, arguments);
     };
 })();
@@ -112,7 +120,7 @@ const removePool = (() => {
         yield new _pool2.default(host).remove();
     });
 
-    return function removePool(_x11) {
+    return function removePool(_x10) {
         return _ref8.apply(this, arguments);
     };
 })();
@@ -126,30 +134,97 @@ class Host {
     constructor(client, name) {
         this.client = client;
         this.name = name;
+        this.db = _registry2.default.get('Database');
     }
 
-    create() {
+    info() {
         var _this = this;
 
         return _asyncToGenerator(function* () {
+            let result = yield _this.db.get(`
+            SELECT *
+            FROM "host"
+            WHERE "client" = :client
+              AND "host" = :host
+            LIMIT 1
+        `, {
+                ':host': _this.name,
+                ':client': _this.client.name
+            });
+            return result;
+        })();
+    }
+
+    exists() {
+        var _this2 = this;
+
+        return _asyncToGenerator(function* () {
+            return !!(yield _this2.info());
+        })();
+    }
+
+    create() {
+        var _this3 = this;
+
+        return _asyncToGenerator(function* () {
+            if (yield _this3.exists()) {
+                return;
+            }
+
+            // find free username
+            const user = yield _user2.default.free(_this3.name);
+
+            // create user
+            const clientInfo = _this3.client.info();
+            const documentRoot = `${ clientInfo.path }/${ user }`;
+            yield _user2.default.create(user, documentRoot);
+
             let template = yield loadTemplate;
-            let data = template(_this);
-            yield createVhostFile(_this.name, data);
-            yield createVhostFolder(_this.client.name, _this.name);
-            yield enableVhost(_this.name);
-            yield addPool(_this);
+            let data = template(Object.assign(_this3, { user: user, documentRoot: documentRoot }));
+            yield createVhostFile(_this3.name, data);
+            yield createVhostFolder(documentRoot, user);
+            yield enableVhost(_this3.name);
+            yield addPool(_this3);
+
+            yield _this3.db.run(`
+            INSERT
+            INTO "host"
+              ("host", "client", "user", "path")
+            VALUES
+              (:host, :client, :user, :path)
+        `, {
+                ':host': _this3.name,
+                ':client': _this3.client.name,
+                ':user': user,
+                ':path': documentRoot
+            });
+
             yield _Apache2.default.restart();
         })();
     }
 
     remove() {
-        var _this2 = this;
+        var _this4 = this;
 
         return _asyncToGenerator(function* () {
-            yield disableVhost(_this2.name);
-            yield removeVhostFile(_this2.name);
-            yield removeVhostFolder(_this2.client.name, _this2.name);
-            yield removePool(_this2);
+            const info = yield _this4.info();
+            if (!info) {
+                return;
+            }
+
+            yield disableVhost(_this4.name);
+            yield removeVhostFile(_this4.name);
+            yield removeVhostFolder(info.path);
+            yield removePool(_this4);
+
+            yield _this4.db.run(`
+            DELETE
+            FROM "host"
+            WHERE "host" = :host
+        `, {
+                ':host': _this4.name
+            });
+
             yield _Apache2.default.restart();
         })();
     }
