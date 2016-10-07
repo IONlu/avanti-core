@@ -1,16 +1,14 @@
-var Promise = require('bluebird'),
-    exec = require('child_process').exec;
+import Promise from 'bluebird';
+import { exec } from 'child_process';
 
-exec = Promise.promisify(exec);
+const execPromise = Promise.promisify(exec);
 
 function escapeString(string) {
-    return string.replace(/[^\\](['"])/g, function(match, quote) {
-        return m.slice(0, 1) + '\\' + quote;
-    });
+    return string.replace(/[^\\](['"])/g, (match, quote) => match.slice(0, 1) + '\\' + quote);
 }
 
 function replacePlaceholders(string, params) {
-    return string.replace(/\{\{([a-z0-9_]+)\}\}/ig, function(match, key) {
+    return string.replace(/\{\{([a-z0-9_]+)\}\}/ig, (match, key) => {
         if (!params[key] || !params[key].length) {
             throw 'exec: "' + key + '" is missing or empty';
         }
@@ -18,6 +16,4 @@ function replacePlaceholders(string, params) {
     });
 }
 
-module.exports = function(command, params) {
-    return exec(replacePlaceholders(command, params || {}));
-}
+export default async (command, params) => execPromise(replacePlaceholders(command, params || {}));
