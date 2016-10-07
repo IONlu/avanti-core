@@ -1,3 +1,9 @@
+#!/usr/bin/env node
+
+if (process.getuid() !== 0) {
+    throw 'You need root privileges to use avanti';
+}
+
 import setup from './setup.js';
 import commander from 'commander';
 import packageJson from '../package.json';
