@@ -1008,6 +1008,11 @@
       "from": "http-signature@>=1.1.0 <1.2.0",
       "resolved": "https://registry.npmjs.org/http-signature/-/http-signature-1.1.1.tgz"
     },
+    "iconv": {
+      "version": "2.2.1",
+      "from": "iconv@latest",
+      "resolved": "https://registry.npmjs.org/iconv/-/iconv-2.2.1.tgz"
+    },
     "indent-string": {
       "version": "2.1.0",
       "from": "indent-string@>=2.1.0 <3.0.0",
