@@ -34,7 +34,8 @@ Vagrant.configure(2) do |config|
 
         apt-get -y install apache2 cronolog letsencrypt sqlite3
         apt-get -y install php php-fpm libapache2-mod-fastcgi
-        apt-get -y install nodejs npm
+        apt-get -y install nodejs nodejs-legacy npm
+        npm install -g node-gyp
         a2enmod rewrite proxy proxy_fcgi
 
         cd /opt/avanti && npm install
