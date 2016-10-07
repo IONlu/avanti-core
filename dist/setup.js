@@ -16,20 +16,38 @@ var _registry = require('./registry.js');
 
 var _registry2 = _interopRequireDefault(_registry);
 
+var _database = require('./database.js');
+
+var _database2 = _interopRequireDefault(_database);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-const initSqlite = (() => {
+const initDatabase = (() => {
     var _ref = _asyncToGenerator(function* () {
-        var db = new _sqlite2.default.Database('/opt/avanti/db.sqlite3');
         return new Promise(function (resolve) {
-            db.serialize();
-            resolve(db);
+            let db = new _sqlite2.default.Database('/opt/avanti/db.sqlite3');
+            let database = new _database2.default(db);
+            database.run(`
+            CREATE TABLE IF NOT EXISTS "client" (
+              "client" VARCHAR(100) NOT NULL,
+              "user" VARCHAR(100) NOT NULL,
+              "path" VARCHAR(200) NOT NULL,
+              PRIMARY KEY ("client"));
+            CREATE TABLE IF NOT EXISTS "host" (
+              "host" VARCHAR(100) NOT NULL,
+              "client" VARCHAR(100) NOT NULL,
+              "user" VARCHAR(100) NOT NULL,
+              "path" VARCHAR(200) NOT NULL,
+              PRIMARY KEY ("host"));
+        `).then(function () {
+                return resolve(database);
+            });
         });
     });
 
-    return function initSqlite() {
+    return function initDatabase() {
         return _ref.apply(this, arguments);
     };
 })();
@@ -40,5 +58,5 @@ exports.default = _asyncToGenerator(function* () {
     yield (0, _mkdirp2.default)('/opt/avanti');
 
     // init singletons
-    _registry2.default.set('Database', (yield initSqlite()));
+    _registry2.default.set('Database', (yield initDatabase()));
 });

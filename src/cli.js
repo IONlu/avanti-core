@@ -7,21 +7,21 @@ import * as Host from './cli/host.js';
 setup().then(() => {
 
     commander
-    .version(packageJson.version);
+        .version(packageJson.version);
 
     commander
-    .command('customer <action> <customer>')
-    .action(function(action, customer) {
-        Customer[action](customer);
-    });
+        .command('customer <action> <customer>')
+        .action(function(action, customer) {
+            Customer[action](customer);
+        });
 
     commander
-    .command('host <action> <customer> <hostname>')
-    .action(function(action, customer, hostname) {
-        Host[action](customer, hostname);
-    });
+        .command('host <action> <customer> <hostname>')
+        .action(function(action, customer, hostname) {
+            Host[action](customer, hostname);
+        });
 
     commander
-    .parse(process.argv);
-    
+        .parse(process.argv);
+
 });
