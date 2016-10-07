@@ -1,5 +1,5 @@
-import Iconv from 'iconv';
-import exec from './exec.js';
+import { Iconv } from 'iconv';
+import exec from '../exec.js';
 
 // validates user name format for ubuntu
 const validate = (name) => {
@@ -9,7 +9,7 @@ const validate = (name) => {
 // coverts name into a valid ubuntu username
 const convert = (name) => {
     let iconv = new Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
-    return iconv.convert(name)
+    return iconv.convert(name).toString()
                 .toLowerCase()
                 .replace(/[^-a-z0-9_]/, '')
                 .replace(/^[0-9]+/, '')
@@ -33,7 +33,12 @@ const home = async (name) => {
 
 // checks if user exists
 const exists = async (name) => {
-    return !! await exec('id -u {{name}} 2> /dev/null', { name });
+    try {
+        await exec('id -u {{name}} 2> /dev/null', { name });
+        return true;
+    } catch (e) {
+        return false;
+    }
 };
 
 // creates a user if valid

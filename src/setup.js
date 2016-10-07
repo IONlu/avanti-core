@@ -1,6 +1,6 @@
 import mkdirp from 'mkdirp';
 import sqlite3 from 'sqlite3';
-import registry from './registry.js';
+import Registry from './registry.js';
 import Database from './database.js';
 
 const initDatabase = async () => {
@@ -29,6 +29,6 @@ export default async () => {
     await mkdirp('/opt/avanti');
 
     // init singletons
-    registry.set('Database', await initDatabase());
+    Registry.set('Database', await initDatabase());
 
 };

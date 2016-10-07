@@ -16,6 +16,30 @@ class Database {
         });
     }
 
+    async get(sql, params) {
+        return new Promise((resolve, reject) => {
+            this.db.get(sql, params, function(err, row) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(row);
+                }
+            });
+        });
+    }
+
+    async all(sql, params) {
+        return new Promise((resolve, reject) => {
+            this.db.all(sql, params, function(err, rows) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+    }
+
 }
 
 export default Database;

@@ -1,11 +1,14 @@
 import exec from './exec.js';
 import Host from './host.js';
+import * as User from './helper/user.js';
+import Registry from './registry.js';
 
 // private functions
 
 const createHomeFolder = async (name) => {
     await exec('mkdir -p /var/www/{{name}}', { name });
     await exec('chown -R {{name}}:{{name}} /var/www/{{name}}', { name });
+    return `/var/www/${name}`;
 };
 
 const createBackupFolder = async (name) => {
@@ -20,18 +23,51 @@ const removeHomeFolder = async (name) => {
 
 class Client {
     constructor(name) {
-        if (name.length > 32 || !name.match(/^[a-z][-a-z0-9_]*$/)) {
-            throw `invalid client name "${name}"`;
-        }
         this.name = name;
         this.hostnames = {};
+        this.db = Registry.get('Database');
+    }
+
+    async exists() {
+        let result = await this.db.get(`
+            SELECT "client"
+            FROM "client"
+            WHERE "client" = :client
+            LIMIT 1
+        `, {
+            ':client': this.name
+        });
+        return result && result.client;
     }
 
     async create() {
-        await exec('useradd --home-dir /var/www/{{name}} --shell /bin/false {{name}}', {
-            name: this.name
+        if (await this.exists()) {
+            return;
+        }
+
+        // find free username
+        const convertedUser = await User.convert(this.name);
+        var user = convertedUser;
+        var index = 0;
+        while (await User.exists(user)) {
+            index++;
+            user = User.renumber(convertedUser, index);
+        }
+
+        await User.create(user);
+        const home = await createHomeFolder(user);
+
+        await this.db.run(`
+            INSERT
+            INTO "client"
+              ("client", "user", "path")
+            VALUES
+              (:client, :user, :path)
+        `, {
+            ':client': this.name,
+            ':user': user,
+            ':path': home
         });
-        await createHomeFolder(this.name);
     }
 
     async remove() {

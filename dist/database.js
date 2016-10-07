@@ -28,6 +28,38 @@ class Database {
         })();
     }
 
+    get(sql, params) {
+        var _this2 = this;
+
+        return _asyncToGenerator(function* () {
+            return new Promise(function (resolve, reject) {
+                _this2.db.get(sql, params, function (err, row) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(row);
+                    }
+                });
+            });
+        })();
+    }
+
+    all(sql, params) {
+        var _this3 = this;
+
+        return _asyncToGenerator(function* () {
+            return new Promise(function (resolve, reject) {
+                _this3.db.all(sql, params, function (err, rows) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(rows);
+                    }
+                });
+            });
+        })();
+    }
+
 }
 
 exports.default = Database;

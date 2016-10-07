@@ -7,9 +7,7 @@ exports.remove = exports.create = exports.exists = exports.home = exports.renumb
 
 var _iconv = require('iconv');
 
-var _iconv2 = _interopRequireDefault(_iconv);
-
-var _exec = require('./exec.js');
+var _exec = require('../exec.js');
 
 var _exec2 = _interopRequireDefault(_exec);
 
@@ -24,8 +22,8 @@ const validate = name => {
 
 // coverts name into a valid ubuntu username
 const convert = name => {
-    let iconv = new _iconv2.default('UTF-8', 'ASCII//TRANSLIT//IGNORE');
-    return iconv.convert(name).toLowerCase().replace(/[^-a-z0-9_]/, '').replace(/^[0-9]+/, '').substr(0, 32);
+    let iconv = new _iconv.Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
+    return iconv.convert(name).toString().toLowerCase().replace(/[^-a-z0-9_]/, '').replace(/^[0-9]+/, '').substr(0, 32);
 };
 
 // adds a number to the username
@@ -52,7 +50,12 @@ const home = (() => {
 // checks if user exists
 const exists = (() => {
     var _ref2 = _asyncToGenerator(function* (name) {
-        return !!(yield (0, _exec2.default)('id -u {{name}} 2> /dev/null', { name: name }));
+        try {
+            yield (0, _exec2.default)('id -u {{name}} 2> /dev/null', { name: name });
+            return true;
+        } catch (e) {
+            return false;
+        }
     });
 
     return function exists(_x2) {
