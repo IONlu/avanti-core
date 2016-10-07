@@ -82,13 +82,7 @@ class Client {
             }
 
             // find free username
-            const convertedUser = yield User.convert(_this3.name);
-            var user = convertedUser;
-            var index = 0;
-            while (yield User.exists(user)) {
-                index++;
-                user = User.renumber(convertedUser, index);
-            }
+            const user = yield User.free(_this3.name);
 
             yield User.create(user);
             const home = yield createHomeFolder(user);

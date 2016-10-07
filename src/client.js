@@ -42,13 +42,7 @@ class Client {
         }
 
         // find free username
-        const convertedUser = await User.convert(this.name);
-        var user = convertedUser;
-        var index = 0;
-        while (await User.exists(user)) {
-            index++;
-            user = User.renumber(convertedUser, index);
-        }
+        const user = await User.free(this.name);
 
         await User.create(user);
         const home = await createHomeFolder(user);

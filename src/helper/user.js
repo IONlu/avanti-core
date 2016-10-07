@@ -72,6 +72,18 @@ const remove = async (name, backupFolder) => {
     await exec('rm -fr {{homeFolder}}', { homeFolder });
 };
 
+// returns a valid free user based on name
+const free = async (name) => {
+    const validUser = await convert(name);
+    var freeUser = validUser;
+    var index = 0;
+    while (await exists(freeUser)) {
+        index++;
+        freeUser = renumber(validUser, index);
+    }
+    return freeUser;
+};
+
 export {
     validate,
     convert,
@@ -79,5 +91,6 @@ export {
     home,
     exists,
     create,
-    remove
+    remove,
+    free
 };

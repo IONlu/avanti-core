@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.remove = exports.create = exports.exists = exports.home = exports.renumber = exports.convert = exports.validate = undefined;
+exports.free = exports.remove = exports.create = exports.exists = exports.home = exports.renumber = exports.convert = exports.validate = undefined;
 
 var _iconv = require('iconv');
 
@@ -106,6 +106,24 @@ const remove = (() => {
     };
 })();
 
+// returns a valid free user based on name
+const free = (() => {
+    var _ref5 = _asyncToGenerator(function* (name) {
+        const validUser = yield convert(name);
+        var freeUser = validUser;
+        var index = 0;
+        while (yield exists(freeUser)) {
+            index++;
+            freeUser = renumber(validUser, index);
+        }
+        return freeUser;
+    });
+
+    return function free(_x6) {
+        return _ref5.apply(this, arguments);
+    };
+})();
+
 exports.validate = validate;
 exports.convert = convert;
 exports.renumber = renumber;
@@ -113,3 +131,4 @@ exports.home = home;
 exports.exists = exists;
 exports.create = create;
 exports.remove = remove;
+exports.free = free;
