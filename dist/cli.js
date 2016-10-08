@@ -39,18 +39,26 @@ try {
 
         _commander2.default.version(_package2.default.version);
 
-        _commander2.default.command('client <action> <client>').action(function (action, client) {
-            Client[action](client);
+        _commander2.default.command('create-client <client>').action(function (client) {
+            Client['create'](client);
         });
 
-        _commander2.default.command('host <action> <client> <hostname>').action(function (action, client, hostname) {
-            Host[action](client, hostname);
+        _commander2.default.command('create-host <client> <hostname>').action(function (client, hostname) {
+            Host['create'](client, hostname);
+        });
+
+        _commander2.default.command('remove-client <client>').action(function (client) {
+            Client['remove'](client);
+        });
+
+        _commander2.default.command('remove-host <client> <hostname>').action(function (client, hostname) {
+            Host['remove'](client, hostname);
         });
 
         _commander2.default.parse(process.argv);
     });
 } catch (e) {
 
-    console.log(_chalk2.default.red(_chalk2.default.bold('ERROR:') + ' ' + e));
     process.exitCode = 1;
+    process.stderr.write(_chalk2.default.red(_chalk2.default.bold('ERROR:') + ' ' + e) + '\n');
 }

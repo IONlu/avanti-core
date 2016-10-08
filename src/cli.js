@@ -18,15 +18,27 @@ try {
             .version(packageJson.version);
 
         commander
-            .command('client <action> <client>')
-            .action(function(action, client) {
-                Client[action](client);
+            .command('create-client <client>')
+            .action(function(client) {
+                Client['create'](client);
             });
 
         commander
-            .command('host <action> <client> <hostname>')
-            .action(function(action, client, hostname) {
-                Host[action](client, hostname);
+            .command('create-host <client> <hostname>')
+            .action(function(client, hostname) {
+                Host['create'](client, hostname);
+            });
+
+        commander
+            .command('remove-client <client>')
+            .action(function(client) {
+                Client['remove'](client);
+            });
+
+        commander
+            .command('remove-host <client> <hostname>')
+            .action(function(client, hostname) {
+                Host['remove'](client, hostname);
             });
 
         commander
@@ -36,7 +48,7 @@ try {
 
 } catch(e) {
 
-    console.log(chalk.red(chalk.bold('ERROR:') + ' ' + e));
     process.exitCode = 1;
-    
+    process.stderr.write(chalk.red(chalk.bold('ERROR:') + ' ' + e) + '\n');
+
 }
