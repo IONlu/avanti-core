@@ -12,7 +12,7 @@ try {
         throw 'Avanti needs root privileges';
     }
 
-    setup().then(() => {
+    setup('/opt/avanti2').then(() => {
 
         commander
             .version(packageJson.version);

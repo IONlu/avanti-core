@@ -3,7 +3,9 @@ import sqlite3 from 'sqlite3';
 import Registry from './registry.js';
 import Database from './database.js';
 import Config from './config.js';
+import path from 'path';
 import fs from 'fs';
+import exec from './exec.js';
 
 const initDatabase = async () => {
     return new Promise((resolve) => {
@@ -26,39 +28,30 @@ const initDatabase = async () => {
     });
 };
 
-const createConfigFile = async (file) => {
-    return new Promise((resolve, reject) => {
-        fs.open(file, 'wx', (err, fd) => {
+const installSkeleton = async (target) => {
+    return new Promise((resolve) => {
+        fs.access(target, fs.R_OK, async (err) => {
             if (err) {
-                if (err.code === 'EEXIST') {
-                    resolve();
-                } else {
-                    reject(err);
-                }
-                return;
-            }
+                // create folder
+                await mkdirp(path.dirname(target));
 
-            fs.write(fd, JSON.stringify({
-                clientPath: '/var/www/vhosts'
-            }, null, 2), (err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
-                }
-            });
+                // copy skeleton
+                const skeleton = path.dirname(__dirname) + '/skeleton';
+                await exec('cp -r {{skeleton}} {{target}}', { skeleton, target });
+
+                resolve();
+            }
         });
     });
 };
 
-export default async () => {
+export default async (target) => {
 
-    // create folder
-    await mkdirp('/opt/avanti');
+    // install skeleton
+    await installSkeleton(target);
 
     // load config
-    await createConfigFile('/opt/avanti/config.json');
-    Registry.set('Config', new Config('/opt/avanti/config.json'));
+    Registry.set('Config', new Config(target + '/config.json'));
 
     // init singletons
     Registry.set('Database', await initDatabase());

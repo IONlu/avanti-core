@@ -35,7 +35,7 @@ try {
         throw 'Avanti needs root privileges';
     }
 
-    (0, _setup2.default)().then(() => {
+    (0, _setup2.default)('/opt/avanti2').then(() => {
 
         _commander2.default.version(_package2.default.version);
 

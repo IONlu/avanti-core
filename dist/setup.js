@@ -24,9 +24,17 @@ var _config = require('./config.js');
 
 var _config2 = _interopRequireDefault(_config);
 
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
+
+var _exec = require('./exec.js');
+
+var _exec2 = _interopRequireDefault(_exec);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -63,46 +71,49 @@ const initDatabase = (() => {
     };
 })();
 
-const createConfigFile = (() => {
-    var _ref2 = _asyncToGenerator(function* (file) {
-        return new Promise(function (resolve, reject) {
-            _fs2.default.open(file, 'wx', function (err, fd) {
-                if (err) {
-                    if (err.code === 'EEXIST') {
-                        resolve();
-                    } else {
-                        reject(err);
-                    }
-                    return;
-                }
-
-                _fs2.default.write(fd, JSON.stringify({
-                    clientPath: '/var/www/vhosts'
-                }, null, 2), function (err) {
+const installSkeleton = (() => {
+    var _ref2 = _asyncToGenerator(function* (target) {
+        return new Promise(function (resolve) {
+            _fs2.default.access(target, _fs2.default.R_OK, (() => {
+                var _ref3 = _asyncToGenerator(function* (err) {
                     if (err) {
-                        reject(err);
-                    } else {
+                        // create folder
+                        yield (0, _mkdirp2.default)(_path2.default.dirname(target));
+
+                        // copy skeleton
+                        const skeleton = _path2.default.dirname(__dirname) + '/skeleton';
+                        yield (0, _exec2.default)('cp -r {{skeleton}} {{target}}', { skeleton: skeleton, target: target });
+
                         resolve();
                     }
                 });
-            });
+
+                return function (_x2) {
+                    return _ref3.apply(this, arguments);
+                };
+            })());
         });
     });
 
-    return function createConfigFile(_x) {
+    return function installSkeleton(_x) {
         return _ref2.apply(this, arguments);
     };
 })();
 
-exports.default = _asyncToGenerator(function* () {
+exports.default = (() => {
+    var _ref4 = _asyncToGenerator(function* (target) {
 
-    // create folder
-    yield (0, _mkdirp2.default)('/opt/avanti');
+        // install skeleton
+        yield installSkeleton(target);
 
-    // load config
-    yield createConfigFile('/opt/avanti/config.json');
-    _registry2.default.set('Config', new _config2.default('/opt/avanti/config.json'));
+        // load config
+        _registry2.default.set('Config', new _config2.default(target + '/config.json'));
 
-    // init singletons
-    _registry2.default.set('Database', (yield initDatabase()));
-});
+        // init singletons
+        _registry2.default.set('Database', (yield initDatabase()));
+    });
+
+    return function (_x3) {
+        return _ref4.apply(this, arguments);
+    };
+})();

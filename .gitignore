@@ -36,5 +36,5 @@ node_modules
 .vagrant
 
 # Avanti
-db.sqlite3
-config.json
+/db.sqlite3
+/config.json
