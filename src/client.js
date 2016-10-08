@@ -17,6 +17,7 @@ class Client {
         this.name = name;
         this.hostnames = {};
         this.db = Registry.get('Database');
+        this.config = Registry.get('Config');
     }
 
     async info() {
@@ -43,7 +44,7 @@ class Client {
         // find free username
         const user = await User.free(this.name);
 
-        const home = `/var/www/vhosts/${user}`;
+        const home = this.config.get('clientPath') + '/' + user;
         await User.create(user, home);
         await createHomeFolder(user, home);
 

@@ -46,6 +46,7 @@ class Client {
         this.name = name;
         this.hostnames = {};
         this.db = _registry2.default.get('Database');
+        this.config = _registry2.default.get('Config');
     }
 
     info() {
@@ -83,7 +84,7 @@ class Client {
             // find free username
             const user = yield User.free(_this3.name);
 
-            const home = `/var/www/vhosts/${ user }`;
+            const home = _this3.config.get('clientPath') + '/' + user;
             yield User.create(user, home);
             yield createHomeFolder(user, home);
 

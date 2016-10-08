@@ -2,6 +2,8 @@ import mkdirp from 'mkdirp';
 import sqlite3 from 'sqlite3';
 import Registry from './registry.js';
 import Database from './database.js';
+import Config from './config.js';
+import fs from 'fs';
 
 const initDatabase = async () => {
     return new Promise((resolve) => {
@@ -24,10 +26,39 @@ const initDatabase = async () => {
     });
 };
 
+const createConfigFile = async (file) => {
+    return new Promise((resolve, reject) => {
+        fs.open(file, 'wx', (err, fd) => {
+            if (err) {
+                if (err.code === 'EEXIST') {
+                    resolve();
+                } else {
+                    reject(err);
+                }
+                return;
+            }
+
+            fs.write(fd, JSON.stringify({
+                clientPath: '/var/www/vhosts'
+            }, null, 2), (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    });
+};
+
 export default async () => {
 
     // create folder
     await mkdirp('/opt/avanti');
+
+    // load config
+    await createConfigFile('/opt/avanti/config.json');
+    Registry.set('Config', new Config('/opt/avanti/config.json'));
 
     // init singletons
     Registry.set('Database', await initDatabase());

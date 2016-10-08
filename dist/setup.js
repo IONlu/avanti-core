@@ -20,6 +20,14 @@ var _database = require('./database.js');
 
 var _database2 = _interopRequireDefault(_database);
 
+var _config = require('./config.js');
+
+var _config2 = _interopRequireDefault(_config);
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -55,10 +63,45 @@ const initDatabase = (() => {
     };
 })();
 
+const createConfigFile = (() => {
+    var _ref2 = _asyncToGenerator(function* (file) {
+        return new Promise(function (resolve, reject) {
+            _fs2.default.open(file, 'wx', function (err, fd) {
+                if (err) {
+                    if (err.code === 'EEXIST') {
+                        resolve();
+                    } else {
+                        reject(err);
+                    }
+                    return;
+                }
+
+                _fs2.default.write(fd, JSON.stringify({
+                    clientPath: '/var/www/vhosts'
+                }, null, 2), function (err) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+        });
+    });
+
+    return function createConfigFile(_x) {
+        return _ref2.apply(this, arguments);
+    };
+})();
+
 exports.default = _asyncToGenerator(function* () {
 
     // create folder
     yield (0, _mkdirp2.default)('/opt/avanti');
+
+    // load config
+    yield createConfigFile('/opt/avanti/config.json');
+    _registry2.default.set('Config', new _config2.default('/opt/avanti/config.json'));
 
     // init singletons
     _registry2.default.set('Database', (yield initDatabase()));
