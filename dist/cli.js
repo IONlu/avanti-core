@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 'use strict';
 
+var _cliColor = require('cli-color');
+
+var _cliColor2 = _interopRequireDefault(_cliColor);
+
 var _setup = require('./setup.js');
 
 var _setup2 = _interopRequireDefault(_setup);
@@ -26,20 +30,22 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 if (process.getuid() !== 0) {
-    throw 'You need root privileges to use avanti';
+
+    console.log(_cliColor2.default.red(_cliColor2.default.bold('ERROR:') + ' Avanti needs root privileges'));
+} else {
+
+    (0, _setup2.default)().then(() => {
+
+        _commander2.default.version(_package2.default.version);
+
+        _commander2.default.command('client <action> <client>').action(function (action, client) {
+            Client[action](client);
+        });
+
+        _commander2.default.command('host <action> <client> <hostname>').action(function (action, client, hostname) {
+            Host[action](client, hostname);
+        });
+
+        _commander2.default.parse(process.argv);
+    });
 }
-
-(0, _setup2.default)().then(() => {
-
-    _commander2.default.version(_package2.default.version);
-
-    _commander2.default.command('client <action> <client>').action(function (action, client) {
-        Client[action](client);
-    });
-
-    _commander2.default.command('host <action> <client> <hostname>').action(function (action, client, hostname) {
-        Host[action](client, hostname);
-    });
-
-    _commander2.default.parse(process.argv);
-});
