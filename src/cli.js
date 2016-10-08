@@ -6,33 +6,37 @@ import packageJson from '../package.json';
 import * as Client from './cli/client.js';
 import * as Host from './cli/host.js';
 
-if (process.getuid() !== 0) {
+try {
 
-    console.log(chalk.red(chalk.bold('ERROR:') + ' Avanti needs root privileges'));
-    process.exitCode = 1;
-
-} else {
+    if (process.getuid() !== 0) {
+        throw 'Avanti needs root privileges';
+    }
 
     setup().then(() => {
 
         commander
-        .version(packageJson.version);
+            .version(packageJson.version);
 
         commander
-        .command('client <action> <client>')
-        .action(function(action, client) {
-            Client[action](client);
-        });
+            .command('client <action> <client>')
+            .action(function(action, client) {
+                Client[action](client);
+            });
 
         commander
-        .command('host <action> <client> <hostname>')
-        .action(function(action, client, hostname) {
-            Host[action](client, hostname);
-        });
+            .command('host <action> <client> <hostname>')
+            .action(function(action, client, hostname) {
+                Host[action](client, hostname);
+            });
 
         commander
-        .parse(process.argv);
+            .parse(process.argv);
 
     });
 
+} catch(e) {
+
+    console.log(chalk.red(chalk.bold('ERROR:') + ' ' + e));
+    process.exitCode = 1;
+    
 }

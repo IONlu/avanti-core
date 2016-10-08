@@ -29,11 +29,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-if (process.getuid() !== 0) {
+try {
 
-    console.log(_chalk2.default.red(_chalk2.default.bold('ERROR:') + ' Avanti needs root privileges'));
-    process.exitCode = 1;
-} else {
+    if (process.getuid() !== 0) {
+        throw 'Avanti needs root privileges';
+    }
 
     (0, _setup2.default)().then(() => {
 
@@ -49,4 +49,8 @@ if (process.getuid() !== 0) {
 
         _commander2.default.parse(process.argv);
     });
+} catch (e) {
+
+    console.log(_chalk2.default.red(_chalk2.default.bold('ERROR:') + ' ' + e));
+    process.exitCode = 1;
 }
