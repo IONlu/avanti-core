@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import clc from 'cli-color';
+import chalk from 'chalk';
 import setup from './setup.js';
 import commander from 'commander';
 import packageJson from '../package.json';
@@ -8,7 +8,7 @@ import * as Host from './cli/host.js';
 
 if (process.getuid() !== 0) {
 
-    console.log(clc.red(clc.bold('ERROR:') + ' Avanti needs root privileges'));
+    console.log(chalk.red(chalk.bold('ERROR:') + ' Avanti needs root privileges'));
     process.exitCode = 1;
 
 } else {

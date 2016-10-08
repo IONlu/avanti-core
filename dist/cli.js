@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 
-var _cliColor = require('cli-color');
+var _chalk = require('chalk');
 
-var _cliColor2 = _interopRequireDefault(_cliColor);
+var _chalk2 = _interopRequireDefault(_chalk);
 
 var _setup = require('./setup.js');
 
@@ -31,7 +31,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 if (process.getuid() !== 0) {
 
-    console.log(_cliColor2.default.red(_cliColor2.default.bold('ERROR:') + ' Avanti needs root privileges'));
+    console.log(_chalk2.default.red(_chalk2.default.bold('ERROR:') + ' Avanti needs root privileges'));
     process.exitCode = 1;
 } else {
 
