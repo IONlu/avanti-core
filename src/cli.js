@@ -9,6 +9,7 @@ import * as Host from './cli/host.js';
 if (process.getuid() !== 0) {
 
     console.log(clc.red(clc.bold('ERROR:') + ' Avanti needs root privileges'));
+    process.exitCode = 1;
 
 } else {
 

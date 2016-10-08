@@ -32,6 +32,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 if (process.getuid() !== 0) {
 
     console.log(_cliColor2.default.red(_cliColor2.default.bold('ERROR:') + ' Avanti needs root privileges'));
+    process.exitCode = 1;
 } else {
 
     (0, _setup2.default)().then(() => {
