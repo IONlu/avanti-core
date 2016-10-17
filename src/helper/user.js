@@ -11,8 +11,8 @@ const convert = (name) => {
     let iconv = new Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
     return iconv.convert(name).toString()
                 .toLowerCase()
-                .replace(/[^-a-z0-9_]/, '')
-                .replace(/^[0-9]+/, '')
+                .replace(/[^-a-z0-9_]/g, '')
+                .replace(/^[0-9]+/g, '')
                 .substr(0, 32);
 };
 

@@ -23,7 +23,7 @@ const validate = name => {
 // coverts name into a valid ubuntu username
 const convert = name => {
     let iconv = new _iconv.Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
-    return iconv.convert(name).toString().toLowerCase().replace(/[^-a-z0-9_]/, '').replace(/^[0-9]+/, '').substr(0, 32);
+    return iconv.convert(name).toString().toLowerCase().replace(/[^-a-z0-9_]/g, '').replace(/^[0-9]+/g, '').substr(0, 32);
 };
 
 // adds a number to the username
