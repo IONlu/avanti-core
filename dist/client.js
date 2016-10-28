@@ -20,6 +20,10 @@ var _registry = require('./registry.js');
 
 var _registry2 = _interopRequireDefault(_registry);
 
+var _convert = require('./helper/convert.js');
+
+var _convert2 = _interopRequireDefault(_convert);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -83,8 +87,9 @@ class Client {
 
             // find free username
             const user = yield User.free(_this3.name);
+            const clientFolder = (0, _convert2.default)(_this3.name, '-a-z0-9_\.');
 
-            const home = _this3.config.get('clientPath') + '/' + user;
+            const home = _this3.config.get('clientPath') + '/' + clientFolder;
             yield User.create(user, home);
             yield createHomeFolder(user, home);
 

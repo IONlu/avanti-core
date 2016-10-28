@@ -1,19 +1,9 @@
-import { Iconv } from 'iconv';
+import convert from './convert.js';
 import exec from '../exec.js';
 
 // validates user name format for ubuntu
 const validate = (name) => {
     return name.length <= 32 && name.match(/^[a-z][-a-z0-9_]*$/);
-};
-
-// coverts name into a valid ubuntu username
-const convert = (name) => {
-    let iconv = new Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
-    return iconv.convert(name).toString()
-                .toLowerCase()
-                .replace(/[^-a-z0-9_]/g, '')
-                .replace(/^[0-9]+/g, '')
-                .substr(0, 32);
 };
 
 // adds a number to the username
