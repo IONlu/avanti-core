@@ -6,6 +6,7 @@ import Pool from './pool.js';
 import Apache from './service/Apache.js';
 import Registry from './registry.js';
 import * as User from './helper/user.js';
+import convert from './helper/convert.js';
 
 const writeFile = Promise.promisify(fs.writeFile);
 const readFile  = Promise.promisify(fs.readFile);
@@ -86,10 +87,11 @@ class Host {
 
         // find free username
         const user = await User.free(this.name);
+        const hostFolder = convert(this.name, '-a-z0-9_\.');
 
         // create user
         const clientInfo = await this.client.info();
-        const home = `${clientInfo.path}/${user}`;
+        const home = `${clientInfo.path}/${hostFolder}`;
         await User.create(user, home);
 
         const documentRoot = `${home}/web`;

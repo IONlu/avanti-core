@@ -2,6 +2,7 @@ import exec from './exec.js';
 import Host from './host.js';
 import * as User from './helper/user.js';
 import Registry from './registry.js';
+import convert from './helper/convert.js';
 
 // private functions
 
@@ -42,8 +43,9 @@ class Client {
 
         // find free username
         const user = await User.free(this.name);
+        const clientFolder = convert(this.name, '-a-z0-9_\.');
 
-        const home = `/var/www/vhosts/${user}`;
+        const home = `/var/www/vhosts/${clientFolder}`;
         await User.create(user, home);
         await createHomeFolder(user, home);
 

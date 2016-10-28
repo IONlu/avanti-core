@@ -5,7 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.free = exports.remove = exports.create = exports.exists = exports.home = exports.renumber = exports.convert = exports.validate = undefined;
 
-var _iconv = require('iconv');
+var _convert = require('./convert.js');
+
+var _convert2 = _interopRequireDefault(_convert);
 
 var _exec = require('../exec.js');
 
@@ -18,12 +20,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 // validates user name format for ubuntu
 const validate = name => {
     return name.length <= 32 && name.match(/^[a-z][-a-z0-9_]*$/);
-};
-
-// coverts name into a valid ubuntu username
-const convert = name => {
-    let iconv = new _iconv.Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
-    return iconv.convert(name).toString().toLowerCase().replace(/[^-a-z0-9_]/g, '').replace(/^[0-9]+/g, '').substr(0, 32);
 };
 
 // adds a number to the username
@@ -109,7 +105,7 @@ const remove = (() => {
 // returns a valid free user based on name
 const free = (() => {
     var _ref5 = _asyncToGenerator(function* (name) {
-        const validUser = yield convert(name);
+        const validUser = yield (0, _convert2.default)(name);
         var freeUser = validUser;
         var index = 0;
         while (yield exists(freeUser)) {
@@ -125,7 +121,7 @@ const free = (() => {
 })();
 
 exports.validate = validate;
-exports.convert = convert;
+exports.convert = _convert2.default;
 exports.renumber = renumber;
 exports.home = home;
 exports.exists = exists;
