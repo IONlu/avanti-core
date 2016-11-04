@@ -2,8 +2,8 @@
     ServerName {{name}}
     DocumentRoot {{documentRoot}}
 
-    ErrorLog "|/usr/bin/cronolog ${APACHE_LOG_DIR}/{{client.name}}/{{name}}/error.log-%Y%m%d"
-    CustomLog "|/usr/bin/cronolog ${APACHE_LOG_DIR}/{{client.name}}/{{name}}/access.log-%Y%m%d" combined
+    ErrorLog "|/usr/bin/cronolog {{logsFolder}}/error.log-%Y%m%d"
+    CustomLog "|/usr/bin/cronolog {{logsFolder}}/access.log-%Y%m%d" combined
 
     <FilesMatch ".+\.php$">
         SetHandler "proxy:unix:/run/php/{{user}}.sock|fcgi://localhost"

@@ -95,8 +95,9 @@ class Host {
         await User.create(user, home);
 
         const documentRoot = `${home}/web`;
+        const logsFolder = `${home}/logs`;
         let template = await loadTemplate;
-        let data = template(Object.assign(this, { user, documentRoot }));
+        let data = template(Object.assign(this, { user, documentRoot, logsFolder }));
         await createVhostFile(this.name, data);
         await createVhostFolder(home, user);
         await enableVhost(this.name);

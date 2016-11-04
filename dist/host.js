@@ -191,8 +191,9 @@ class Host {
             yield User.create(user, home);
 
             const documentRoot = `${ home }/web`;
+            const logsFolder = `${ home }/logs`;
             let template = yield loadTemplate;
-            let data = template(Object.assign(_this3, { user: user, documentRoot: documentRoot }));
+            let data = template(Object.assign(_this3, { user: user, documentRoot: documentRoot, logsFolder: logsFolder }));
             yield createVhostFile(_this3.name, data);
             yield createVhostFolder(home, user);
             yield enableVhost(_this3.name);
