@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import setup from './setup.js';
-import commander from 'commander';
+import yargonaut from 'yargonaut';
+import yargs from 'yargs';
 import packageJson from '../package.json';
 import * as Client from './cli/client.js';
 import * as Host from './cli/host.js';
@@ -12,11 +13,27 @@ try {
     }
 
     setup('/opt/avanti').then(() => {
+        yargonaut
+            .style('blue')
+            .helpStyle('green')
+            .errorsStyle('red');
 
-        commander
-            .version(packageJson.version);
+        yargs
+            .version(packageJson.version)
+            .command('client <client>', 'client manager', {
+                create: {
+                    alias: 'c',
+                    describe: 'create client'
+                },
+                remove: {
+                    alias: 'r',
+                    describe: 'remove client'
+                }
+            })
+            .help()
+            .argv;
 
-        commander
+        /*commander
             .command('create-client <client>')
             .action(function(client) {
                 Client['create'](client);
@@ -41,7 +58,7 @@ try {
             });
 
         commander
-            .parse(process.argv);
+            .parse(process.argv);*/
 
     });
 

@@ -39,9 +39,10 @@ const installSkeleton = async (target) => {
                 const skeleton = path.dirname(__dirname) + '/skeleton';
                 await exec('cp -r {{skeleton}} {{target}}', { skeleton, target });
 
-                resolve();
             }
+            resolve();
         });
+
     });
 };
 
