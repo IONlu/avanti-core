@@ -127,9 +127,12 @@ class Host {
         }
 
         await disableVhost(this.name);
-        await removeVhostFile(this.name);
-        await removeVhostFolder(info.path);
-        await removePool(this);
+        
+        await Promise.all([
+            removeVhostFile(this.name),
+            removeVhostFolder(info.path),
+            removePool(this)
+        ]);
 
         await this.db.run(`
             DELETE
