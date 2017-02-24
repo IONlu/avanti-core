@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 'use strict';
 
 var _chalk = require('chalk');
@@ -35,7 +34,7 @@ try {
         throw 'Avanti needs root privileges';
     }
 
-    (0, _setup2.default)('/opt/avanti2').then(() => {
+    (0, _setup2.default)('/opt/avanti').then(() => {
 
         _commander2.default.version(_package2.default.version);
 

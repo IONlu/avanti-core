@@ -9,10 +9,15 @@ Vagrant.configure(2) do |config|
 
     config.vm.network :forwarded_port, guest: 80, host: 8080
 
-    config.vm.synced_folder ".", "/opt/avanti/",
+    config.vm.synced_folder ".", "/home/ubuntu/avanti/",
         owner: "ubuntu",
         group: "ubuntu",
         mount_options: ["dmode=775,fmode=664"]
+
+    config.vm.synced_folder "./bin", "/home/ubuntu/avanti/bin",
+        owner: "ubuntu",
+        group: "ubuntu",
+        mount_options: ["dmode=775,fmode=777"]
 
     config.vm.provider "virtualbox" do |vb|
         vb.memory = 1024
@@ -38,11 +43,13 @@ Vagrant.configure(2) do |config|
         npm install -g node-gyp
         a2enmod rewrite proxy proxy_fcgi
 
-        cd /opt/avanti && npm install
+        cd /home/ubuntu/avanti && npm install
+        ln -s /home/ubuntu/avanti/bin/avanti /usr/local/bin/avanti
 
         locale-gen en_GB.UTF-8
     SCRIPT
 
+    config.ssh.insert_key = true
     config.ssh.forward_agent = true
 
 end

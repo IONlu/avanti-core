@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import chalk from 'chalk';
 import setup from './setup.js';
 import commander from 'commander';
@@ -12,7 +11,7 @@ try {
         throw 'Avanti needs root privileges';
     }
 
-    setup('/opt/avanti2').then(() => {
+    setup('/opt/avanti').then(() => {
 
         commander
             .version(packageJson.version);
