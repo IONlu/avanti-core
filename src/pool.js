@@ -33,6 +33,7 @@ class Pool {
             'pm.start_servers': 1,
             'pm.min_spare_servers': 1,
             'pm.max_spare_servers': 3,
+            'catch_workers_output': 'yes',
             'php_admin_value[open_basedir]': `${hostInfo.path}`,
             'php_admin_value[session.save_path]': `${hostInfo.path}/sessions`,
             'php_admin_value[disable_functions]': 'exec,mail,passthru,popen,proc_open,show_source,shell,shell_exec,symlink,system,phpinfo',
