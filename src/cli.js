@@ -16,49 +16,65 @@ try {
         yargonaut
             .style('blue')
             .helpStyle('green')
-            .errorsStyle('red');
+            .errorsStyle('red.bold');
 
-        yargs
+        var options = yargs
             .version(packageJson.version)
+
             .command('client <client>', 'client manager', {
                 create: {
                     alias: 'c',
-                    describe: 'create client'
+                    describe: 'create client',
+                    type: 'boolean'
                 },
                 remove: {
                     alias: 'r',
-                    describe: 'remove client'
+                    describe: 'remove client',
+                    type: 'boolean'
+                }
+            }, argv => {
+                if (argv.create) {
+                    Client.create(argv.client);
+                    return;
+                }
+
+                if (argv.remove) {
+                    Client.remove(argv.client);
+                    return;
                 }
             })
+
+            .command('host <client> <hostname>', 'host manager', {
+                create: {
+                    alias: 'c',
+                    describe: 'create host',
+                    type: 'boolean'
+                },
+                remove: {
+                    alias: 'r',
+                    describe: 'remove host',
+                    type: 'boolean'
+                }
+            }, argv => {
+                if (argv.create) {
+                    Host.create(argv.client, argv.hostname);
+                    return;
+                }
+
+                if (argv.remove) {
+                    Host.create(argv.client, argv.hostname);
+                    return;
+                }
+            })
+
+            .recommendCommands()
             .help()
+            .showHelpOnFail(false, 'Specify --help for available options')
             .argv;
 
-        /*commander
-            .command('create-client <client>')
-            .action(function(client) {
-                Client['create'](client);
-            });
-
-        commander
-            .command('create-host <client> <hostname>')
-            .action(function(client, hostname) {
-                Host['create'](client, hostname);
-            });
-
-        commander
-            .command('remove-client <client>')
-            .action(function(client) {
-                Client['remove'](client);
-            });
-
-        commander
-            .command('remove-host <client> <hostname>')
-            .action(function(client, hostname) {
-                Host['remove'](client, hostname);
-            });
-
-        commander
-            .parse(process.argv);*/
+        if (options._.length === 0) {
+            yargs.showHelp();
+        }
 
     });
 
