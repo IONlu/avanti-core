@@ -37,16 +37,16 @@ Vagrant.configure(2) do |config|
         apt-get update
         apt-get -y upgrade
 
+        locale-gen en_GB.UTF-8
+
         apt-get -y install apache2 cronolog letsencrypt sqlite3
         apt-get -y install php php-fpm libapache2-mod-fastcgi
-        apt-get -y install nodejs nodejs-legacy npm
-        npm install -g node-gyp
         a2enmod rewrite proxy proxy_fcgi
 
-        cd /home/ubuntu/avanti && npm install
-        ln -s /home/ubuntu/avanti/bin/avanti /usr/local/bin/avanti
+        curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+        apt-get -y install nodejs
 
-        locale-gen en_GB.UTF-8
+        ln -s /home/ubuntu/avanti/bin/avanti /usr/local/bin/avanti
     SCRIPT
 
     config.ssh.insert_key = true
