@@ -5,14 +5,12 @@ import Registry from './registry.js';
 import convert from './helper/convert.js';
 
 // private functions
-
 const createHomeFolder = async (name, home) => {
     await exec('mkdir -p {{home}}', { home });
     await exec('chown -R {{name}}:{{name}} {{home}}', { name, home });
 };
 
 // client class
-
 class Client {
     constructor(name) {
         this.name = name;
@@ -90,5 +88,15 @@ class Client {
         await (new Host(this, hostname)).remove();
     }
 }
+
+Client.all = async () => {
+    const db = Registry.get('Database');
+    let result = await db.all(`
+        SELECT *
+        FROM "client"
+        ORDER BY "client"
+    `);
+    return result;
+};
 
 export default Client;

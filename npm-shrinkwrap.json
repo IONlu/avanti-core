@@ -60,7 +60,7 @@
     },
     "chalk": {
       "version": "1.1.3",
-      "from": "chalk@>=1.1.3 <2.0.0",
+      "from": "chalk@latest",
       "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz"
     },
     "cliui": {
@@ -80,7 +80,7 @@
     },
     "decamelize": {
       "version": "1.2.0",
-      "from": "decamelize@>=1.0.0 <2.0.0",
+      "from": "decamelize@>=1.1.2 <2.0.0",
       "resolved": "https://registry.npmjs.org/decamelize/-/decamelize-1.2.0.tgz"
     },
     "deep-equal": {
@@ -185,7 +185,7 @@
     },
     "iconv": {
       "version": "2.2.1",
-      "from": "iconv@>=2.2.1 <3.0.0",
+      "from": "iconv@latest",
       "resolved": "https://registry.npmjs.org/iconv/-/iconv-2.2.1.tgz"
     },
     "inflight": {
@@ -195,7 +195,7 @@
     },
     "inherits": {
       "version": "2.0.3",
-      "from": "inherits@>=2.0.3 <2.1.0",
+      "from": "inherits@>=2.0.1 <2.1.0",
       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
     },
     "ini": {
@@ -303,7 +303,7 @@
     },
     "mkdirp": {
       "version": "0.5.1",
-      "from": "mkdirp@*",
+      "from": "mkdirp@>=0.5.0 <0.6.0",
       "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.1.tgz",
       "dependencies": {
         "minimist": {
@@ -325,7 +325,7 @@
     },
     "normalize-package-data": {
       "version": "2.3.5",
-      "from": "normalize-package-data@>=2.3.2 <3.0.0",
+      "from": "normalize-package-data@>=2.3.4 <3.0.0",
       "resolved": "https://registry.npmjs.org/normalize-package-data/-/normalize-package-data-2.3.5.tgz"
     },
     "number-is-nan": {
@@ -357,6 +357,11 @@
       "version": "1.4.0",
       "from": "os-locale@>=1.4.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/os-locale/-/os-locale-1.4.0.tgz"
+    },
+    "pad": {
+      "version": "1.1.0",
+      "from": "pad@latest",
+      "resolved": "https://registry.npmjs.org/pad/-/pad-1.1.0.tgz"
     },
     "parent-require": {
       "version": "1.0.0",
@@ -425,7 +430,7 @@
     },
     "resolve": {
       "version": "1.1.7",
-      "from": "resolve@>=1.1.7 <1.2.0",
+      "from": "resolve@>=1.1.7 <2.0.0",
       "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.1.7.tgz"
     },
     "resumer": {

@@ -22,6 +22,11 @@ try {
             .version(packageJson.version)
 
             .command('client', 'client manager', {
+                list: {
+                    alias: 'l',
+                    describe: 'list clients',
+                    type: 'boolean'
+                },
                 create: {
                     alias: 'c',
                     describe: 'client to create',
@@ -33,6 +38,11 @@ try {
                     type: 'string'
                 }
             }, argv => {
+                if (argv.list) {
+                    Client.list();
+                    return;
+                }
+
                 if (argv.create) {
                     Client.create(argv.create);
                     return;
