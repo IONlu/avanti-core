@@ -55,10 +55,14 @@ try {
             })
 
             .command('host', 'host manager', {
+                list: {
+                    alias: 'l',
+                    describe: 'list hosts',
+                    type: 'boolean'
+                },
                 client: {
                     describe: 'client to use',
-                    type: 'string',
-                    demand: true
+                    type: 'string'
                 },
                 create: {
                     alias: 'c',
@@ -71,12 +75,25 @@ try {
                     type: 'string'
                 }
             }, argv => {
+                if (argv.list) {
+                    Host.list();
+                    return;
+                }
+
                 if (argv.create) {
+                    if (!argv.client) {
+                        process.exitCode = 1;
+                        process.stderr.write(chalk.red('Missing required argument: client') + '\n');
+                    }
                     Host.create(argv.client, argv.create);
                     return;
                 }
 
                 if (argv.remove) {
+                    if (!argv.client) {
+                        process.exitCode = 1;
+                        process.stderr.write(chalk.red('Missing required argument: client') + '\n');
+                    }
                     Host.create(argv.client, argv.remove);
                     return;
                 }

@@ -127,7 +127,7 @@ class Host {
         }
 
         await disableVhost(this.name);
-        
+
         await Promise.all([
             removeVhostFile(this.name),
             removeVhostFolder(info.path),
@@ -145,5 +145,16 @@ class Host {
         await Apache.restart();
     }
 }
+
+Host.all = async () => {
+    const db = Registry.get('Database');
+    let result = await db.all(`
+        SELECT *
+        FROM "host"
+        ORDER BY "host"
+    `);
+    return result;
+};
+
 
 export default Host;
