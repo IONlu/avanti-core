@@ -96,7 +96,7 @@ try {
                         process.exitCode = 1;
                         process.stderr.write(chalk.red('Missing required argument: client') + '\n');
                     }
-                    Host.create(argv.client, argv.remove);
+                    Host.remove(argv.client, argv.remove);
                     return;
                 }
 
