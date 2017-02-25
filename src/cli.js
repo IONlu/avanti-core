@@ -52,6 +52,8 @@ try {
                     Client.remove(argv.remove);
                     return;
                 }
+
+                yargs.showHelp();
             })
 
             .command('host', 'host manager', {
@@ -97,6 +99,8 @@ try {
                     Host.create(argv.client, argv.remove);
                     return;
                 }
+
+                yargs.showHelp();
             })
 
             .recommendCommands()
