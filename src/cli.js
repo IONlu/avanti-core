@@ -21,48 +21,53 @@ try {
         var options = yargs
             .version(packageJson.version)
 
-            .command('client <client>', 'client manager', {
+            .command('client', 'client manager', {
                 create: {
                     alias: 'c',
-                    describe: 'create client',
-                    type: 'boolean'
+                    describe: 'client to create',
+                    type: 'string'
                 },
                 remove: {
                     alias: 'r',
-                    describe: 'remove client',
-                    type: 'boolean'
+                    describe: 'client to remove',
+                    type: 'string'
                 }
             }, argv => {
                 if (argv.create) {
-                    Client.create(argv.client);
+                    Client.create(argv.create);
                     return;
                 }
 
                 if (argv.remove) {
-                    Client.remove(argv.client);
+                    Client.remove(argv.remove);
                     return;
                 }
             })
 
-            .command('host <client> <hostname>', 'host manager', {
+            .command('host', 'host manager', {
+                client: {
+                    describe: 'client to use',
+                    type: 'string',
+                    demand: true
+                },
                 create: {
                     alias: 'c',
-                    describe: 'create host',
-                    type: 'boolean'
+                    describe: 'host to create',
+                    type: 'string'
                 },
                 remove: {
                     alias: 'r',
-                    describe: 'remove host',
-                    type: 'boolean'
+                    describe: 'host to remove',
+                    type: 'string'
                 }
             }, argv => {
                 if (argv.create) {
-                    Host.create(argv.client, argv.hostname);
+                    Host.create(argv.client, argv.create);
                     return;
                 }
 
                 if (argv.remove) {
-                    Host.create(argv.client, argv.hostname);
+                    Host.create(argv.client, argv.remove);
                     return;
                 }
             })
