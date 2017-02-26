@@ -7,9 +7,9 @@ import path from 'path';
 import fs from 'fs';
 import exec from './exec.js';
 
-const initDatabase = async () => {
+const initDatabase = async (target) => {
     return new Promise((resolve) => {
-        let db = new sqlite3.Database('/opt/avanti/db.sqlite3');
+        let db = new sqlite3.Database(`${target}/db.sqlite3`);
         let database = new Database(db);
         database.run(`
             CREATE TABLE IF NOT EXISTS "client" (
@@ -55,6 +55,6 @@ export default async (target) => {
     Registry.set('Config', new Config(target + '/config.json'));
 
     // init singletons
-    Registry.set('Database', await initDatabase());
+    Registry.set('Database', await initDatabase(target));
 
 };
