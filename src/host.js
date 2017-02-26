@@ -132,7 +132,7 @@ class Host {
             removeVhostFile(this.name),
             removeVhostFolder(info.path),
             removePool(this),
-            User.remove(info.user)
+            User.remove(info.user, `/var/www/backup/${info.user}`)
         ]);
 
         await this.db.run(`
@@ -157,5 +157,17 @@ Host.all = async () => {
     return result;
 };
 
+Host.allByClient = async (client) => {
+    const db = Registry.get('Database');
+    let result = await db.all(`
+        SELECT *
+        FROM "host"
+        WHERE "client" = :client
+        ORDER BY "host"
+    `, {
+        ':client': client.name
+    });
+    return result;
+};
 
 export default Host;
