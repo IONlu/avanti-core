@@ -10,18 +10,39 @@ Domains get assigned a pool of PHP processes that they can spawn.
 ### Vagrant box
 
 ```
-    cd /path/to/avanti/repo
-    vagrant up
-    vagrant ssh
+cd /path/to/avanti/repo
+vagrant up
+vagrant ssh
 ```
 
 ## Requirements
 **For now** you need to add the _multiverse_ repository because of **libapache2-mod-fastcgi**
 
+#### Update server
 ```
 apt update
-apt install apache2 cronolog letsencrypt
-apt install php7.0 php7.0-fpm libapache2-mod-fastcgi
+apt dist-upgrade
+```
+
+#### Install required packages
+```
+apt install apache2 cronolog letsencrypt sqlite3
+apt install php php-fpm libapache2-mod-fastcgi
 apt install nodejs nodejs-legacy npm
+npm install -g node-gyp
 a2enmod rewrite proxy proxy_fcgi
+```
+
+## Installation
+#### Using npm
+```
+sudo npm -g install avanti-core
+```
+
+## Commands
+Avanti needs to be executed as **root** user
+#### help
+Get an overview of the available commands
+```
+avanti --help
 ```

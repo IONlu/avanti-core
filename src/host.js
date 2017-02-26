@@ -6,6 +6,7 @@ import Pool from './pool.js';
 import Apache from './service/Apache.js';
 import Registry from './registry.js';
 import * as User from './helper/user.js';
+import convert from './helper/convert.js';
 
 const writeFile = Promise.promisify(fs.writeFile);
 const readFile  = Promise.promisify(fs.readFile);
@@ -86,15 +87,17 @@ class Host {
 
         // find free username
         const user = await User.free(this.name);
+        const hostFolder = convert(this.name, '-a-z0-9_\.');
 
         // create user
         const clientInfo = await this.client.info();
-        const home = `${clientInfo.path}/${user}`;
+        const home = `${clientInfo.path}/${hostFolder}`;
         await User.create(user, home);
 
         const documentRoot = `${home}/web`;
+        const logsFolder = `${home}/logs`;
         let template = await loadTemplate;
-        let data = template(Object.assign(this, { user, documentRoot }));
+        let data = template(Object.assign(this, { user, documentRoot, logsFolder }));
         await createVhostFile(this.name, data);
         await createVhostFolder(home, user);
         await enableVhost(this.name);
@@ -124,9 +127,13 @@ class Host {
         }
 
         await disableVhost(this.name);
-        await removeVhostFile(this.name);
-        await removeVhostFolder(info.path);
-        await removePool(this);
+
+        await Promise.all([
+            removeVhostFile(this.name),
+            removeVhostFolder(info.path),
+            removePool(this),
+            User.remove(info.user, `/var/www/backup/${info.user}`)
+        ]);
 
         await this.db.run(`
             DELETE
@@ -139,5 +146,28 @@ class Host {
         await Apache.restart();
     }
 }
+
+Host.all = async () => {
+    const db = Registry.get('Database');
+    let result = await db.all(`
+        SELECT *
+        FROM "host"
+        ORDER BY "host"
+    `);
+    return result;
+};
+
+Host.allByClient = async (client) => {
+    const db = Registry.get('Database');
+    let result = await db.all(`
+        SELECT *
+        FROM "host"
+        WHERE "client" = :client
+        ORDER BY "host"
+    `, {
+        ':client': client.name
+    });
+    return result;
+};
 
 export default Host;

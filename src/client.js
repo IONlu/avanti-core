@@ -2,21 +2,22 @@ import exec from './exec.js';
 import Host from './host.js';
 import * as User from './helper/user.js';
 import Registry from './registry.js';
+import convert from './helper/convert.js';
+import inquirer from 'inquirer';
 
 // private functions
-
 const createHomeFolder = async (name, home) => {
     await exec('mkdir -p {{home}}', { home });
     await exec('chown -R {{name}}:{{name}} {{home}}', { name, home });
 };
 
 // client class
-
 class Client {
     constructor(name) {
         this.name = name;
         this.hostnames = {};
         this.db = Registry.get('Database');
+        this.config = Registry.get('Config');
     }
 
     async info() {
@@ -42,8 +43,9 @@ class Client {
 
         // find free username
         const user = await User.free(this.name);
+        const clientFolder = convert(this.name, '-a-z0-9_\.');
 
-        const home = `/var/www/vhosts/${user}`;
+        const home = this.config.get('clientPath') + '/' + clientFolder;
         await User.create(user, home);
         await createHomeFolder(user, home);
 
@@ -66,6 +68,24 @@ class Client {
             return;
         }
 
+        let hosts = await this.hosts();
+        if (hosts.length) {
+            process.stdout.write('The following hosts will be deleted:\n');
+            process.stdout.write(hosts.join(', ') + '\n');
+            let { proceed } = await inquirer.prompt([{
+                name: 'proceed',
+                type: 'confirm',
+                message: 'Are you sure you want to proceed?',
+                default: false
+            }]);
+            if (!proceed) {
+                return;
+            }
+            hosts.forEach(host => this.removeHost(host));
+        }
+
+        await User.remove(info.user, `/var/www/backup/${info.user}`);
+
         await this.db.run(`
             DELETE
             FROM "client"
@@ -73,10 +93,6 @@ class Client {
         `, {
             ':client': this.name
         });
-
-        console.warn('TODO: delete all hosts for this user');
-
-        await User.remove(info.user, `/var/www/backup/${info.user}`);
     }
 
     async addHost(hostname) {
@@ -86,6 +102,22 @@ class Client {
     async removeHost(hostname) {
         await (new Host(this, hostname)).remove();
     }
+
+    async hosts() {
+        let result = await Host.allByClient(this);
+        let hosts = result.map(row => row.host);
+        return hosts;
+    }
 }
+
+Client.all = async () => {
+    const db = Registry.get('Database');
+    let result = await db.all(`
+        SELECT *
+        FROM "client"
+        ORDER BY "client"
+    `);
+    return result;
+};
 
 export default Client;
