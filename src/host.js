@@ -131,7 +131,8 @@ class Host {
         await Promise.all([
             removeVhostFile(this.name),
             removeVhostFolder(info.path),
-            removePool(this)
+            removePool(this),
+            User.remove(info.user)
         ]);
 
         await this.db.run(`
