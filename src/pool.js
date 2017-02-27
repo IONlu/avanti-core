@@ -1,7 +1,7 @@
 import Promise from 'bluebird';
 import ini from 'ini';
 import fs from 'fs';
-import Fpm from './service/Fpm.js';
+import * as Task from './task';
 
 const writeFile = Promise.promisify(fs.writeFile);
 const unlink    = Promise.promisify(fs.unlink);
@@ -42,12 +42,12 @@ class Pool {
             section: this.host.name
         });
         await createPoolFile(this.host.name, data);
-        await Fpm.restart();
+        await Task.run('fpm.restart');
     }
 
     async remove() {
         await removePoolFile(this.host.name);
-        await Fpm.restart();
+        await Task.run('fpm.restart');
     }
 }
 

@@ -6,7 +6,7 @@ import Pool from './pool.js';
 import Registry from './registry.js';
 import * as User from './helper/user.js';
 import convert from './helper/convert.js';
-import * as task from './task';
+import * as Task from './task';
 
 const writeFile = Promise.promisify(fs.writeFile);
 const readFile  = Promise.promisify(fs.readFile);
@@ -117,7 +117,7 @@ class Host {
 
         await addPool(this);
 
-        await task.run('apache.restart');
+        await Task.run('apache.restart');
     }
 
     async remove() {
@@ -143,7 +143,7 @@ class Host {
             ':host': this.name
         });
 
-        await task.run('apache.restart');
+        await Task.run('apache.restart');
     }
 }
 
