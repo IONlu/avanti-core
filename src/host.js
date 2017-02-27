@@ -3,10 +3,10 @@ import fs from 'fs';
 import exec from './exec.js';
 import Handlebars from 'handlebars';
 import Pool from './pool.js';
-import Apache from './service/Apache.js';
 import Registry from './registry.js';
 import * as User from './helper/user.js';
 import convert from './helper/convert.js';
+import * as task from './task';
 
 const writeFile = Promise.promisify(fs.writeFile);
 const readFile  = Promise.promisify(fs.readFile);
@@ -117,7 +117,7 @@ class Host {
 
         await addPool(this);
 
-        await Apache.restart();
+        await task.run('apache.restart');
     }
 
     async remove() {
@@ -143,7 +143,7 @@ class Host {
             ':host': this.name
         });
 
-        await Apache.restart();
+        await task.run('apache.restart');
     }
 }
 
