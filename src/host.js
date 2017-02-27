@@ -12,14 +12,6 @@ const writeFile = Promise.promisify(fs.writeFile);
 const readFile  = Promise.promisify(fs.readFile);
 const unlink    = Promise.promisify(fs.unlink);
 
-const enableVhost = async (hostname) => {
-    await exec('a2ensite {{hostname}}', { hostname });
-};
-
-const disableVhost = async (hostname) => {
-    await exec('a2dissite {{hostname}}', { hostname });
-};
-
 const createVhostFile = async (hostname, data) => {
     await writeFile(`/etc/apache2/sites-available/${hostname}.conf`, data);
 };
@@ -100,7 +92,9 @@ class Host {
         let data = template(Object.assign(this, { user, documentRoot, logsFolder }));
         await createVhostFile(this.name, data);
         await createVhostFolder(home, user);
-        await enableVhost(this.name);
+        await Task.run('apache.vhost.enable', {
+            hostname: this.name
+        });
 
         await this.db.run(`
             INSERT
@@ -126,7 +120,9 @@ class Host {
             return;
         }
 
-        await disableVhost(this.name);
+        await Task.run('apache.vhost.disable', {
+            hostname: this.name
+        });
 
         await Promise.all([
             removeVhostFile(this.name),

@@ -3,7 +3,7 @@ import chalk from 'chalk';
 export const run = async (name, args) => {
     process.stdout.write(chalk.blue('Task: ' + name + ' [run]\n'));
     try {
-        var task = require('./' + name.replace('.', '/'));
+        var task = require('./' + name.replace(/\./g, '/'));
         await task.run(args);
     } catch (err) {
         process.stdout.write(chalk.red('Task: ' + name + ' [error]\n'));
