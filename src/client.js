@@ -81,7 +81,12 @@ class Client {
             if (!proceed) {
                 return;
             }
-            hosts.forEach(host => this.removeHost(host));
+
+            while (hosts.length)
+            {
+                let host = hosts.pop();
+                await this.removeHost(host);
+            }
         }
 
         await User.remove(info.user, `/var/www/backup/${info.user}`);
