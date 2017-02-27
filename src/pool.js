@@ -1,18 +1,5 @@
-import Promise from 'bluebird';
 import ini from 'ini';
-import fs from 'fs';
 import * as Task from './task';
-
-const writeFile = Promise.promisify(fs.writeFile);
-const unlink    = Promise.promisify(fs.unlink);
-
-const createPoolFile = async (hostname, data) => {
-    await writeFile(`/etc/php/7.0/fpm/pool.d/${hostname}.conf`, data);
-};
-
-const removePoolFile = async (hostname) => {
-    await unlink(`/etc/php/7.0/fpm/pool.d/${hostname}.conf`);
-};
 
 class Pool {
     constructor(host) {
@@ -41,12 +28,17 @@ class Pool {
         }, {
             section: this.host.name
         });
-        await createPoolFile(this.host.name, data);
+        await Task.run('fpm.pool.create', {
+            hostname: this.host.name,
+            data
+        });
         await Task.run('fpm.restart');
     }
 
     async remove() {
-        await removePoolFile(this.host.name);
+        await Task.run('fpm.pool.remove', {
+            hostname: this.host.name
+        });
         await Task.run('fpm.restart');
     }
 }
