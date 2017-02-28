@@ -5,6 +5,7 @@ import yargs from 'yargs';
 import packageJson from '../package.json';
 import * as Client from './cli/client.js';
 import * as Host from './cli/host.js';
+import * as Task from './task';
 
 try {
 
@@ -101,6 +102,11 @@ try {
                 }
 
                 yargs.showHelp();
+            })
+
+            .command('task <task>', 'execute task', {
+            }, argv => {
+                Task.run(argv.task, argv);
             })
 
             .recommendCommands()
