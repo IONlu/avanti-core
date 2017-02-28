@@ -111,7 +111,7 @@ class Host {
 
         await addPool(this);
 
-        await Task.run('apache.restart');
+        await Task.run('apache.reload');
     }
 
     async remove() {
@@ -139,7 +139,7 @@ class Host {
             ':host': this.name
         });
 
-        await Task.run('apache.restart');
+        await Task.run('apache.reload');
     }
 }
 
