@@ -8,17 +8,7 @@ import * as User from './helper/user.js';
 import convert from './helper/convert.js';
 import * as Task from './task';
 
-const writeFile = Promise.promisify(fs.writeFile);
 const readFile  = Promise.promisify(fs.readFile);
-const unlink    = Promise.promisify(fs.unlink);
-
-const createVhostFile = async (hostname, data) => {
-    await writeFile(`/etc/apache2/sites-available/${hostname}.conf`, data);
-};
-
-const removeVhostFile = async (hostname) => {
-    await unlink(`/etc/apache2/sites-available/${hostname}.conf`);
-};
 
 const createVhostFolder = async (path, user) => {
     await exec('mkdir -p {{path}}', { path });
@@ -90,7 +80,10 @@ class Host {
         const logsFolder = `${home}/logs`;
         let template = await loadTemplate;
         let data = template(Object.assign(this, { user, documentRoot, logsFolder }));
-        await createVhostFile(this.name, data);
+        await Task.run('apache.vhost.create', {
+            hostname: this.name,
+            data
+        });
         await createVhostFolder(home, user);
         await Task.run('apache.vhost.enable', {
             hostname: this.name
@@ -125,7 +118,9 @@ class Host {
         });
 
         await Promise.all([
-            removeVhostFile(this.name),
+            Task.run('apache.vhost.remove', {
+                hostname: this.name
+            }),
             removeVhostFolder(info.path),
             removePool(this),
             User.remove(info.user, `/var/www/backup/${info.user}`)
