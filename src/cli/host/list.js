@@ -1,27 +1,8 @@
-import Client from '../client.js';
-import Host from '../host.js';
+import Host from '../../host.js';
 import chalk from 'chalk';
 import pad from 'pad';
 
-const create = async (client, hostname) => {
-    try {
-        await (new Client(client)).addHost(hostname);
-    } catch(e) {
-        process.exitCode = 1;
-        process.stderr.write(chalk.red(chalk.bold('ERROR:') + ' ' + e) + '\n');
-    }
-};
-
-const remove = async (client, hostname) => {
-    try {
-        await (new Client(client)).removeHost(hostname);
-    } catch(e) {
-        process.exitCode = 1;
-        process.stderr.write(chalk.red(chalk.bold('ERROR:') + ' ' + e) + '\n');
-    }
-};
-
-const list = async () => {
+export const execute = async () => {
     try {
         var hosts = await Host.all();
         var hostLength = hosts.reduce((a, b) => Math.max(a, b.host.length), 0);
@@ -38,5 +19,3 @@ const list = async () => {
         process.stderr.write(chalk.red(chalk.bold('ERROR:') + ' ' + e) + '\n');
     }
 };
-
-export { create, remove, list };
