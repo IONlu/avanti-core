@@ -14,11 +14,6 @@ Vagrant.configure(2) do |config|
         group: "vagrant",
         mount_options: ["dmode=777,fmode=777"]
 
-    config.vm.synced_folder "./bin", "/home/vagrant/avanti/bin",
-        owner: "vagrant",
-        group: "vagrant",
-        mount_options: ["dmode=775,fmode=777"]
-
     config.vm.provider "virtualbox" do |vb|
         vb.memory = 1024
         vb.cpus   = 2
@@ -33,26 +28,27 @@ Vagrant.configure(2) do |config|
     ENV["LC_ALL"] = "en_GB.UTF-8"
 
     config.vm.provision "base", type: "shell", :inline => <<-SCRIPT
-        apt-get update
-
         locale-gen en_GB.UTF-8
 
-        apt-get -y install apache2 cronolog letsencrypt sqlite3
-        apt-get -y install php php-fpm libapache2-mod-fastcgi
-        apt-get -y install build-essential
-        a2enmod rewrite proxy proxy_fcgi
-
         curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-        apt-get -y install nodejs
+        apt-get update && apt-get upgrade
+
+        apt-get -y install \
+            apache2 \
+            cronolog \
+            letsencrypt \
+            sqlite3 \
+            php \
+            php-fpm \
+            libapache2-mod-fastcgi \
+            build-essential \
+            nodejs
+
+        a2enmod rewrite proxy proxy_fcgi
 
         npm -g install node-pre-gyp gulp
 
-        cd /home/vagrant/avanti
-
-        # run npm install 2 times and rebuild (hack)
-        npm install --no-bin-links
-        npm install --no-bin-links
-        npm rebuild
+        cd /home/vagrant/avanti && npm install
 
         # create symlink for avanti executable
         ln -s /home/vagrant/avanti/bin/avanti /usr/local/bin/avanti
