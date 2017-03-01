@@ -6,8 +6,26 @@ import Config from './config.js';
 import path from 'path';
 import fs from 'fs';
 import exec from './exec.js';
+import Knex from 'knex';
+
 
 const initDatabase = async (target) => {
+    var db = Knex({
+        client: 'sqlite3',
+        connection: {
+            filename: `${target}/db.sqlite3`
+        },
+        useNullAsDefault: true
+    });
+    await db.migrate.latest({
+        directory: './dist/database/migrations'
+    })
+    .then((data) => {
+        console.log('migration done', data);
+    });
+
+    process.exit();
+
     return new Promise((resolve) => {
         let db = new sqlite3.Database(`${target}/db.sqlite3`);
         let database = new Database(db);
