@@ -79,7 +79,12 @@ class Host {
         const documentRoot = `${home}/web`;
         const logsFolder = `${home}/logs`;
         let template = await loadTemplate;
-        let data = template(Object.assign(this, { user, documentRoot, logsFolder }));
+        let data = template(Object.assign(this, {
+            port: 80,
+            user,
+            documentRoot,
+            logsFolder
+        }));
         await Task.run('apache.vhost.create', {
             hostname: this.name,
             data
