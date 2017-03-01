@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
     config.vm.synced_folder ".", "/home/vagrant/avanti/",
         owner: "vagrant",
         group: "vagrant",
-        mount_options: ["dmode=775,fmode=664"]
+        mount_options: ["dmode=777,fmode=777"]
 
     config.vm.synced_folder "./bin", "/home/vagrant/avanti/bin",
         owner: "vagrant",
