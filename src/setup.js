@@ -44,13 +44,21 @@ const installSkeleton = async (target) => {
     return new Promise((resolve) => {
         fs.access(target, fs.R_OK, async (err) => {
             if (err) {
-                // create folder
-                await mkdirp(path.dirname(target));
+                process.stdout.write(chalk.blue('Copy skeleton ...'));
+                try {
 
-                // copy skeleton
-                const skeleton = path.dirname(__dirname) + '/skeleton';
-                await exec('cp -r {{skeleton}} {{target}}', { skeleton, target });
+                    // create folder
+                    await mkdirp(path.dirname(target));
 
+                    // copy skeleton
+                    const skeleton = path.dirname(__dirname) + '/skeleton';
+                    await exec('cp -r {{skeleton}} {{target}}', { skeleton, target });
+
+                } catch(err) {
+                    process.stdout.write(chalk.red(' [error]\n'));
+                    throw err;
+                }
+                process.stdout.write(chalk.green(' [ok]\n'));
             }
             resolve();
         });
