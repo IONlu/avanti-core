@@ -1,14 +1,11 @@
 import mkdirp from 'mkdirp';
-import sqlite3 from 'sqlite3';
 import Registry from './registry.js';
-import Database from './database.js';
 import Config from './config.js';
 import path from 'path';
 import fs from 'fs';
 import exec from './exec.js';
 import chalk from 'chalk';
 import Knex from 'knex';
-
 
 const initDatabase = async (target) => {
     var db = Knex({
@@ -39,8 +36,7 @@ const initDatabase = async (target) => {
             }
         })
         .then(() => {
-            let db = new sqlite3.Database(`${target}/db.sqlite3`);
-            return new Database(db);
+            return db;
         });
 };
 
