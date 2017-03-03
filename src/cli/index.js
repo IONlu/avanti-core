@@ -7,14 +7,20 @@ import * as Client from './client';
 import * as Host from './host';
 import * as Task from './task';
 
-const handle = (handler, yargs) => {
+const handleError = err => {
+    process.exitCode = 1;
+    process.stderr.write(chalk.red(chalk.bold('ERROR:') + ' ' + err) + '\n');
+    process.exit();
+};
+
+const handleCommand = (handler, yargs) => {
     return async argv => {
         try {
             await handler.handle(argv, yargs);
         } catch(err) {
-            process.exitCode = 1;
-            process.stderr.write(chalk.red(chalk.bold('ERROR:') + ' ' + err) + '\n');
+            handleError(err);
         }
+        process.exit();
     };
 };
 
@@ -33,9 +39,9 @@ try {
         var options = yargs
             .version(packageJson.version)
 
-            .command(Client.command, Client.description, Client.options, handle(Client, yargs))
-            .command(Host.command, Host.description, Host.options, handle(Host, yargs))
-            .command(Task.command, Task.description, Task.options, handle(Task, yargs))
+            .command(Client.command, Client.description, Client.options, handleCommand(Client, yargs))
+            .command(Host.command, Host.description, Host.options, handleCommand(Host, yargs))
+            .command(Task.command, Task.description, Task.options, handleCommand(Task, yargs))
 
             .recommendCommands()
             .help()
@@ -43,6 +49,7 @@ try {
 
         if (options._.length === 0) {
             yargs.showHelp();
+            process.exit();
         }
 
     }, err => {
@@ -50,8 +57,5 @@ try {
     });
 
 } catch(err) {
-
-    process.exitCode = 1;
-    process.stderr.write(chalk.red(chalk.bold('ERROR:') + ' ' + err) + '\n');
-
+    handleError(err);
 }

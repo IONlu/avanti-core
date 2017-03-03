@@ -1,31 +1,43 @@
 import mkdirp from 'mkdirp';
-import sqlite3 from 'sqlite3';
 import Registry from './registry.js';
-import Database from './database.js';
 import Config from './config.js';
 import path from 'path';
 import fs from 'fs';
 import exec from './exec.js';
+import chalk from 'chalk';
+import Knex from 'knex';
 
 const initDatabase = async (target) => {
-    return new Promise((resolve) => {
-        let db = new sqlite3.Database(`${target}/db.sqlite3`);
-        let database = new Database(db);
-        database.run(`
-            CREATE TABLE IF NOT EXISTS "client" (
-              "client" VARCHAR(100) NOT NULL,
-              "user" VARCHAR(100) NOT NULL,
-              "path" VARCHAR(200) NOT NULL,
-              PRIMARY KEY ("client"));
-        `).then(() => database.run(`
-            CREATE TABLE IF NOT EXISTS "host" (
-              "host" VARCHAR(100) NOT NULL,
-              "client" VARCHAR(100) NOT NULL,
-              "user" VARCHAR(100) NOT NULL,
-              "path" VARCHAR(200) NOT NULL,
-              PRIMARY KEY ("host"));
-        `).then(() => resolve(database)));
+    var db = Knex({
+        client: 'sqlite3',
+        connection: {
+            filename: `${target}/db.sqlite3`
+        },
+        useNullAsDefault: true,
+        migrations: {
+            directory: __dirname + '/database/migrations',
+            tableName: 'migrations'
+        }
     });
+
+    return db.migrate
+        .currentVersion() // this needs to be called to ensure migrations table has been created
+        .then(() => db.migrate.status())
+        .then(status => {
+            if (status !== 0) {
+                process.stdout.write(chalk.blue('Updating database ...'));
+                return db.migrate.latest()
+                    .then(() => {
+                        process.stdout.write(chalk.green(' [ok]\n'));
+                    }, err => {
+                        process.stdout.write(chalk.red(' [error]\n'));
+                        throw err;
+                    });
+            }
+        })
+        .then(() => {
+            return db;
+        });
 };
 
 const installSkeleton = async (target) => {

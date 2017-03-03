@@ -21,14 +21,13 @@ class Client {
     }
 
     async info() {
-        let result = await this.db.get(`
-            SELECT *
-            FROM "client"
-            WHERE "client" = :client
-            LIMIT 1
-        `, {
-            ':client': this.name
-        });
+        let result = await this.db
+            .table('client')
+            .first('*')
+            .where({
+                client: this.name
+            })
+            .limit(1);
         return result;
     }
 
@@ -49,17 +48,13 @@ class Client {
         await User.create(user, home);
         await createHomeFolder(user, home);
 
-        await this.db.run(`
-            INSERT
-            INTO "client"
-              ("client", "user", "path")
-            VALUES
-              (:client, :user, :path)
-        `, {
-            ':client': this.name,
-            ':user': user,
-            ':path': home
-        });
+        await this.db
+            .table('client')
+            .insert({
+                client: this.name,
+                user: user,
+                path: home
+            });
     }
 
     async remove() {
@@ -91,13 +86,12 @@ class Client {
 
         await User.remove(info.user, `/var/www/backup/${info.user}`);
 
-        await this.db.run(`
-            DELETE
-            FROM "client"
-            WHERE "client" = :client
-        `, {
-            ':client': this.name
-        });
+        await this.db
+            .table('client')
+            .where({
+                client: this.name
+            })
+            .delete();
     }
 
     async addHost(hostname) {
@@ -117,11 +111,10 @@ class Client {
 
 Client.all = async () => {
     const db = Registry.get('Database');
-    let result = await db.all(`
-        SELECT *
-        FROM "client"
-        ORDER BY "client"
-    `);
+    let result = await db
+        .table('client')
+        .select('*')
+        .orderBy('client');
     return result;
 };
 

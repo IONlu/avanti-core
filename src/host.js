@@ -45,16 +45,14 @@ class Host {
     }
 
     async info() {
-        let result = await this.db.get(`
-            SELECT *
-            FROM "host"
-            WHERE "client" = :client
-              AND "host" = :host
-            LIMIT 1
-        `, {
-            ':host': this.name,
-            ':client': this.client.name
-        });
+        let result = await this.db
+            .table('host')
+            .first('*')
+            .where({
+                host: this.name,
+                client: this.client.name
+            })
+            .limit(1);
         return result;
     }
 
@@ -94,18 +92,14 @@ class Host {
             hostname: this.name
         });
 
-        await this.db.run(`
-            INSERT
-            INTO "host"
-              ("host", "client", "user", "path")
-            VALUES
-              (:host, :client, :user, :path)
-        `, {
-            ':host': this.name,
-            ':client': this.client.name,
-            ':user': user,
-            ':path': home
-        });
+        await this.db
+            .table('host')
+            .insert({
+                host: this.name,
+                client: this.client.name,
+                user: user,
+                path: home
+            });
 
         await addPool(this);
 
@@ -131,38 +125,35 @@ class Host {
             User.remove(info.user, `/var/www/backup/${info.user}`)
         ]);
 
-        await this.db.run(`
-            DELETE
-            FROM "host"
-            WHERE "host" = :host
-        `, {
-            ':host': this.name
-        });
-
         await Task.run('apache.reload');
+
+        await this.db
+            .table('host')
+            .where({
+                host: this.name
+            })
+            .delete();
     }
 }
 
 Host.all = async () => {
     const db = Registry.get('Database');
-    let result = await db.all(`
-        SELECT *
-        FROM "host"
-        ORDER BY "host"
-    `);
+    let result = await db
+        .table('host')
+        .select('*')
+        .orderBy('host');
     return result;
 };
 
 Host.allByClient = async (client) => {
     const db = Registry.get('Database');
-    let result = await db.all(`
-        SELECT *
-        FROM "host"
-        WHERE "client" = :client
-        ORDER BY "host"
-    `, {
-        ':client': client.name
-    });
+    let result = await db
+        .table('host')
+        .select('*')
+        .where({
+            client: client.name
+        })
+        .orderBy('host');
     return result;
 };
 
