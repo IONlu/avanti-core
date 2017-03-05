@@ -1,4 +1,4 @@
-export const command = 'client';
+export const command = 'client [client]';
 
 export const description = 'client manager';
 
@@ -10,13 +10,13 @@ export const options = {
     },
     create: {
         alias: 'c',
-        describe: 'client to create',
-        type: 'string'
+        describe: 'create client',
+        type: 'boolean'
     },
     remove: {
         alias: 'r',
-        describe: 'client to remove',
-        type: 'string'
+        describe: 'remove client',
+        type: 'boolean'
     }
 };
 

@@ -1,4 +1,4 @@
-export const command = 'host';
+export const command = 'host [host]';
 
 export const description = 'host manager';
 
@@ -14,18 +14,27 @@ export const options = {
     },
     create: {
         alias: 'c',
-        describe: 'host to create',
-        type: 'string'
+        describe: 'create host',
+        type: 'boolean'
     },
     remove: {
         alias: 'r',
-        describe: 'host to remove',
+        describe: 'remove host',
+        type: 'boolean'
+    },
+    'create-alias': {
+        alias: 'alias',
+        describe: 'add alias',
+        type: 'string'
+    },
+    'remove-alias': {
+        describe: 'remove alias',
         type: 'string'
     }
 };
 
 export const handle = (argv, yargs) => {
-    var actions = ['list', 'create', 'remove'];
+    var actions = ['list', 'create', 'remove', 'create-alias', 'remove-alias'];
     for (let i = 0; i < actions.length; i++) {
         if (argv[actions[i]]) {
             return require('./' + actions[i]).execute(argv);

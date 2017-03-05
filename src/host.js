@@ -113,7 +113,7 @@ class Host {
             user: info.user,
             documentRoot,
             logsFolder,
-            alias: info.alias? info.alias.split(',').join(' ') : null
+            alias: info.alias? info.alias.split(',') : null
         }));
         await Task.run('apache.vhost.create', {
             hostname: this.name,
@@ -145,9 +145,51 @@ class Host {
         await this.db
             .table('host')
             .where({
+                client: this.client.name,
                 host: this.name
             })
             .delete();
+    }
+
+    async createAlias(alias) {
+        let info = await this.info();
+        var currentAlias = info.alias? info.alias.split(',') : [];
+        if (currentAlias.indexOf(alias) > -1) {
+            return;
+        }
+        currentAlias.push(alias);
+        await this.db
+            .table('host')
+            .where({
+                client: this.client.name,
+                host: this.name
+            })
+            .update({
+                alias: currentAlias.join(',')
+            });
+        await this.updateHost();
+        await Task.run('apache.reload');
+    }
+
+    async removeAlias(alias) {
+        let info = await this.info();
+        var currentAlias = info.alias? info.alias.split(',') : [];
+        var index = currentAlias.indexOf(alias);
+        if (index < 0) {
+            return;
+        }
+        currentAlias.splice(index, 1);
+        await this.db
+            .table('host')
+            .where({
+                client: this.client.name,
+                host: this.name
+            })
+            .update({
+                alias: currentAlias.join(',')
+            });
+        await this.updateHost();
+        await Task.run('apache.reload');
     }
 }
 
