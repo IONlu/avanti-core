@@ -65,33 +65,13 @@ class Host {
             return;
         }
 
-        // find free username
+        // find free username and collect data for database
         const user = await User.free(this.name);
         const hostFolder = convert(this.name, '-a-z0-9_\.');
-
-        // create user
         const clientInfo = await this.client.info();
         const home = `${clientInfo.path}/${hostFolder}`;
-        await User.create(user, home);
 
-        const documentRoot = `${home}/web`;
-        const logsFolder = `${home}/logs`;
-        let template = await loadTemplate;
-        let data = template(Object.assign(this, {
-            port: 80,
-            user,
-            documentRoot,
-            logsFolder
-        }));
-        await Task.run('apache.vhost.create', {
-            hostname: this.name,
-            data
-        });
-        await createVhostFolder(home, user);
-        await Task.run('apache.vhost.enable', {
-            hostname: this.name
-        });
-
+        // insert into database
         await this.db
             .table('host')
             .insert({
@@ -101,9 +81,44 @@ class Host {
                 path: home
             });
 
+        // create user
+        await User.create(user, home);
+
+        // create host file
+        await this.updateHost();
+
+        // create vhost folder
+        await createVhostFolder(home, user);
+        await Task.run('apache.vhost.enable', {
+            hostname: this.name
+        });
+
+        // create fpm pool
         await addPool(this);
 
+        // reload apache
         await Task.run('apache.reload');
+    }
+
+    async updateHost() {
+        const [ info, template ] = await Promise.all([
+            this.info(),
+            loadTemplate
+        ]);
+
+        const documentRoot = `${info.path}/web`;
+        const logsFolder = `${info.path}/logs`;
+        let data = template(Object.assign(this, {
+            port: 80,
+            user: info.user,
+            documentRoot,
+            logsFolder,
+            alias: info.alias? info.alias.split(',').join(' ') : null
+        }));
+        await Task.run('apache.vhost.create', {
+            hostname: this.name,
+            data
+        });
     }
 
     async remove() {
