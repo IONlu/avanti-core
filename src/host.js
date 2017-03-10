@@ -3,30 +3,12 @@ import fs from 'fs';
 import exec from './exec.js';
 import Handlebars from 'handlebars';
 import Pool from './pool.js';
-import Apache from './service/Apache.js';
 import Registry from './registry.js';
 import * as User from './helper/user.js';
 import convert from './helper/convert.js';
+import * as Task from './task';
 
-const writeFile = Promise.promisify(fs.writeFile);
 const readFile  = Promise.promisify(fs.readFile);
-const unlink    = Promise.promisify(fs.unlink);
-
-const enableVhost = async (hostname) => {
-    await exec('a2ensite {{hostname}}', { hostname });
-};
-
-const disableVhost = async (hostname) => {
-    await exec('a2dissite {{hostname}}', { hostname });
-};
-
-const createVhostFile = async (hostname, data) => {
-    await writeFile(`/etc/apache2/sites-available/${hostname}.conf`, data);
-};
-
-const removeVhostFile = async (hostname) => {
-    await unlink(`/etc/apache2/sites-available/${hostname}.conf`);
-};
 
 const createVhostFolder = async (path, user) => {
     await exec('mkdir -p {{path}}', { path });
@@ -63,16 +45,14 @@ class Host {
     }
 
     async info() {
-        let result = await this.db.get(`
-            SELECT *
-            FROM "host"
-            WHERE "client" = :client
-              AND "host" = :host
-            LIMIT 1
-        `, {
-            ':host': this.name,
-            ':client': this.client.name
-        });
+        let result = await this.db
+            .table('host')
+            .first('*')
+            .where({
+                host: this.name,
+                client: this.client.name
+            })
+            .limit(1);
         return result;
     }
 
@@ -85,39 +65,60 @@ class Host {
             return;
         }
 
-        // find free username
+        // find free username and collect data for database
         const user = await User.free(this.name);
         const hostFolder = convert(this.name, '-a-z0-9_\.');
-
-        // create user
         const clientInfo = await this.client.info();
         const home = `${clientInfo.path}/${hostFolder}`;
+
+        // insert into database
+        await this.db
+            .table('host')
+            .insert({
+                host: this.name,
+                client: this.client.name,
+                user: user,
+                path: home
+            });
+
+        // create user
         await User.create(user, home);
 
-        const documentRoot = `${home}/web`;
-        const logsFolder = `${home}/logs`;
-        let template = await loadTemplate;
-        let data = template(Object.assign(this, { user, documentRoot, logsFolder }));
-        await createVhostFile(this.name, data);
-        await createVhostFolder(home, user);
-        await enableVhost(this.name);
+        // create host file
+        await this.updateHost();
 
-        await this.db.run(`
-            INSERT
-            INTO "host"
-              ("host", "client", "user", "path")
-            VALUES
-              (:host, :client, :user, :path)
-        `, {
-            ':host': this.name,
-            ':client': this.client.name,
-            ':user': user,
-            ':path': home
+        // create vhost folder
+        await createVhostFolder(home, user);
+        await Task.run('apache.vhost.enable', {
+            hostname: this.name
         });
 
+        // create fpm pool
         await addPool(this);
 
-        await Apache.restart();
+        // reload apache
+        await Task.run('apache.reload');
+    }
+
+    async updateHost() {
+        const [ info, template ] = await Promise.all([
+            this.info(),
+            loadTemplate
+        ]);
+
+        const documentRoot = `${info.path}/web`;
+        const logsFolder = `${info.path}/logs`;
+        let data = template(Object.assign(this, {
+            port: 80,
+            user: info.user,
+            documentRoot,
+            logsFolder,
+            alias: info.alias? info.alias.split(',') : null
+        }));
+        await Task.run('apache.vhost.create', {
+            hostname: this.name,
+            data
+        });
     }
 
     async remove() {
@@ -126,47 +127,90 @@ class Host {
             return;
         }
 
-        await disableVhost(this.name);
+        await Task.run('apache.vhost.disable', {
+            hostname: this.name
+        });
 
         await Promise.all([
-            removeVhostFile(this.name),
+            Task.run('apache.vhost.remove', {
+                hostname: this.name
+            }),
             removeVhostFolder(info.path),
             removePool(this),
             User.remove(info.user, `/var/www/backup/${info.user}`)
         ]);
 
-        await this.db.run(`
-            DELETE
-            FROM "host"
-            WHERE "host" = :host
-        `, {
-            ':host': this.name
-        });
+        await Task.run('apache.reload');
 
-        await Apache.restart();
+        await this.db
+            .table('host')
+            .where({
+                client: this.client.name,
+                host: this.name
+            })
+            .delete();
+    }
+
+    async createAlias(alias) {
+        let info = await this.info();
+        var currentAlias = info.alias? info.alias.split(',') : [];
+        if (currentAlias.indexOf(alias) > -1) {
+            return;
+        }
+        currentAlias.push(alias);
+        await this.db
+            .table('host')
+            .where({
+                client: this.client.name,
+                host: this.name
+            })
+            .update({
+                alias: currentAlias.join(',')
+            });
+        await this.updateHost();
+        await Task.run('apache.reload');
+    }
+
+    async removeAlias(alias) {
+        let info = await this.info();
+        var currentAlias = info.alias? info.alias.split(',') : [];
+        var index = currentAlias.indexOf(alias);
+        if (index < 0) {
+            return;
+        }
+        currentAlias.splice(index, 1);
+        await this.db
+            .table('host')
+            .where({
+                client: this.client.name,
+                host: this.name
+            })
+            .update({
+                alias: currentAlias.join(',')
+            });
+        await this.updateHost();
+        await Task.run('apache.reload');
     }
 }
 
 Host.all = async () => {
     const db = Registry.get('Database');
-    let result = await db.all(`
-        SELECT *
-        FROM "host"
-        ORDER BY "host"
-    `);
+    let result = await db
+        .table('host')
+        .select('*')
+        .orderBy('host');
     return result;
 };
 
 Host.allByClient = async (client) => {
     const db = Registry.get('Database');
-    let result = await db.all(`
-        SELECT *
-        FROM "host"
-        WHERE "client" = :client
-        ORDER BY "host"
-    `, {
-        ':client': client.name
-    });
+    let result = await db
+        .table('host')
+        .select('*')
+        .where({
+            client: client.name
+        })
+        .orderBy('host');
     return result;
 };
 

@@ -1,5 +1,9 @@
-<VirtualHost *:80>
+<VirtualHost *:{{port}}>
     ServerName {{name}}
+    {{#if alias}}
+    ServerAlias{{#each alias}} {{.}}{{/each}}
+    {{/if}}
+
     DocumentRoot {{documentRoot}}
 
     ErrorLog "|/usr/bin/cronolog {{logsFolder}}/error.log-%Y%m%d"
