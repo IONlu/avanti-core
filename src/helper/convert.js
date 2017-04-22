@@ -8,36 +8,21 @@ import { Iconv } from 'iconv';
 // - F = folder, doesn't modify the folder name
 const convert = (name, allowedChars, type) => {
 
-    switch(type)
-    {
-        case 'H':
-		var nameRegex = 'h$&';
-		break;
-	case 'F':
-		var nameRegex = '$&';
-		break;	 
-        case 'C':
-		var nameRegex = 'c$&';
-		break;
-        default:
-		var nameRegex = 'c$&';
-		break;
+    if(type == 'f') {
+        var nameReplace = '$&';
+    } else {
+        var nameReplace = type+'$&';
     }
 
-    // if the name is number-only, convert it
-    if (typeof name == 'number')
-    {
-	var n = name.toString();
-	name = n;
-    }
-	
+    console.log('nameReplace = '+nameReplace);
+
     allowedChars = allowedChars || '-a-z0-9_';
 
     let iconv = new Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
-    return iconv.convert(name).toString()
+    return iconv.convert(''+name).toString()
                 .toLowerCase()
                 .replace(new RegExp('[^' + allowedChars + ']', 'g'), '')
-                .replace(/^[0-9]+/g, nameRegex )
+                .replace(/^[0-9]+/g, nameReplace )
                 .substr(0, 32);
 };
 

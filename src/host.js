@@ -66,8 +66,8 @@ class Host {
         }
 
         // find free username and collect data for database
-        const user = await User.free(this.name,'H');
-        const hostFolder = convert(this.name,'-a-z0-9_\.','F');
+        const user = await User.free(this.name,'h');
+        const hostFolder = convert(this.name,'-a-z0-9_\.','f');
         const clientInfo = await this.client.info();
         const home = `${clientInfo.path}/${hostFolder}`;
 
