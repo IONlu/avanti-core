@@ -41,8 +41,8 @@ class Client {
         }
 
         // find free username
-        const user = await User.free(this.name);
-        const clientFolder = convert(this.name, '-a-z0-9_\.');
+        const user = await User.free(this.name,'C');
+        const clientFolder = convert(this.name, '-a-z0-9_\.','F');
 
         const home = this.config.get('clientPath') + '/' + clientFolder;
         await User.create(user, home);
