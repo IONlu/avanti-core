@@ -14,7 +14,7 @@ const createHomeFolder = async (name, home) => {
 // client class
 class Client {
     constructor(name) {
-        this.name = name;
+        this.name = ''+name;
         this.hostnames = {};
         this.db = Registry.get('Database');
         this.config = Registry.get('Config');
@@ -41,8 +41,8 @@ class Client {
         }
 
         // find free username
-        const user = await User.free(this.name);
-        const clientFolder = convert(this.name, '-a-z0-9_\.');
+        const user = await User.free(this.name,'c');
+        const clientFolder = convert(this.name, '-a-z0-9_\.','c');
 
         const home = this.config.get('clientPath') + '/' + clientFolder;
         await User.create(user, home);

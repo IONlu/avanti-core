@@ -1,14 +1,26 @@
 import { Iconv } from 'iconv';
 
 // removes special chars
-const convert = (name, allowedChars) => {
+//
+// 3 type options for cases where the start of name is a number
+// - C = client (default) adds a letter "c" in front of the username
+// - H = host, adds the letter "h" to the front of the username
+// - F = folder, doesn't modify the folder name
+const convert = (name, allowedChars, type) => {
+
+    if(type == 'f') {
+        var numericPrefix = '$&';
+    } else {
+        var numericPrefix = type+'$&';
+    }
+
     allowedChars = allowedChars || '-a-z0-9_';
 
     let iconv = new Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
     return iconv.convert(name).toString()
                 .toLowerCase()
                 .replace(new RegExp('[^' + allowedChars + ']', 'g'), '')
-                .replace(/^[0-9]+/g, '')
+                .replace(/^[0-9]+/g, numericPrefix )
                 .substr(0, 32);
 };
 

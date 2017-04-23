@@ -40,7 +40,7 @@ const loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
 class Host {
     constructor(client, name) {
         this.client = client;
-        this.name = name;
+        this.name = ''+name;
         this.db = Registry.get('Database');
     }
 
@@ -66,8 +66,8 @@ class Host {
         }
 
         // find free username and collect data for database
-        const user = await User.free(this.name);
-        const hostFolder = convert(this.name, '-a-z0-9_\.');
+        const user = await User.free(this.name,'h');
+        const hostFolder = convert(this.name,'-a-z0-9_\.','f');
         const clientInfo = await this.client.info();
         const home = `${clientInfo.path}/${hostFolder}`;
 

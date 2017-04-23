@@ -63,8 +63,9 @@ const remove = async (name, backupFolder) => {
 };
 
 // returns a valid free user based on name
-const free = async (name) => {
-    const validUser = await convert(name);
+const free = async (name,type) => {
+    const validUser = await convert(name,'',type);
+
     var freeUser = validUser;
     var index = 0;
     while (await exists(freeUser)) {
