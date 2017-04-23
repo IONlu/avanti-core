@@ -17,7 +17,7 @@ const convert = (name, allowedChars, type) => {
     allowedChars = allowedChars || '-a-z0-9_';
 
     let iconv = new Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
-    return iconv.convert(''+name).toString()
+    return iconv.convert(name).toString()
                 .toLowerCase()
                 .replace(new RegExp('[^' + allowedChars + ']', 'g'), '')
                 .replace(/^[0-9]+/g, numericPrefix )

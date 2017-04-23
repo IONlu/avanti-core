@@ -14,7 +14,7 @@ const createHomeFolder = async (name, home) => {
 // client class
 class Client {
     constructor(name) {
-        this.name = name;
+        this.name = ''+name;
         this.hostnames = {};
         this.db = Registry.get('Database');
         this.config = Registry.get('Config');

@@ -40,7 +40,7 @@ const loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
 class Host {
     constructor(client, name) {
         this.client = client;
-        this.name = name;
+        this.name = ''+name;
         this.db = Registry.get('Database');
     }
 
