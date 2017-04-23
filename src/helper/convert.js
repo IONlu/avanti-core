@@ -9,12 +9,10 @@ import { Iconv } from 'iconv';
 const convert = (name, allowedChars, type) => {
 
     if(type == 'f') {
-        var nameReplace = '$&';
+        var numericPrefix = '$&';
     } else {
-        var nameReplace = type+'$&';
+        var numericPrefix = type+'$&';
     }
-
-    console.log('nameReplace = '+nameReplace);
 
     allowedChars = allowedChars || '-a-z0-9_';
 
@@ -22,7 +20,7 @@ const convert = (name, allowedChars, type) => {
     return iconv.convert(''+name).toString()
                 .toLowerCase()
                 .replace(new RegExp('[^' + allowedChars + ']', 'g'), '')
-                .replace(/^[0-9]+/g, nameReplace )
+                .replace(/^[0-9]+/g, numericPrefix )
                 .substr(0, 32);
 };
 
