@@ -1,7 +1,5 @@
 import { Iconv } from 'iconv';
 
-// removes special chars
-//
 // 3 type options for cases where the start of name is a number
 // - C = client (default) adds a letter "c" in front of the username
 // - H = host, adds the letter "h" to the front of the username
