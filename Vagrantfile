@@ -40,7 +40,7 @@ Vagrant.configure(2) do |config|
         sudo add-apt-repository -y ppa:certbot/certbot
         sudo apt-get update
 
-        # install php 3 php versions
+        # install different php versions
         sudo apt-get -y install php5.6 php5.6-xml php5.6-curl php5.6-soap php5.6-mysql php5.6-fpm
         sudo apt-get -y install php7.0 php7.0-xml php7.0-curl php7.0-soap php7.0-mysql php7.0-fpm
         sudo apt-get -y install php7.1 php7.1-xml php7.1-curl php7.1-soap php7.1-mysql php7.1-fpm
