@@ -56,8 +56,6 @@ Vagrant.configure(2) do |config|
 
         sudo a2enmod rewrite proxy proxy_fcgi
 
-        sudo npm install -g gulp
-
         cd /home/vagrant/avanti && npm install
 
         # create symlink for avanti executable

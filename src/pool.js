@@ -30,6 +30,7 @@ class Pool {
         });
         await Task.run('fpm.pool.create', {
             hostname: this.host.name,
+            php: hostInfo.php,
             data
         });
         await Task.run('fpm.restart');
