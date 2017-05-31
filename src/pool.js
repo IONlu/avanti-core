@@ -33,14 +33,14 @@ class Pool {
             php: hostInfo.php,
             data
         });
-        await Task.run('fpm.restart');
+        await Task.run('fpm.reload');
     }
 
     async remove() {
         await Task.run('fpm.pool.remove', {
             hostname: this.host.name
         });
-        await Task.run('fpm.restart');
+        await Task.run('fpm.reload');
     }
 }
 
