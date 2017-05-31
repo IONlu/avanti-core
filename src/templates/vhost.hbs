@@ -13,7 +13,7 @@
         SetHandler "proxy:unix:/run/php/{{user}}.sock|fcgi://localhost"
     </FilesMatch>
 
-    <Directory {{documentRoot}}>
+    <Directory "{{documentRoot}}">
         AllowOverride All
     </Directory>
 </VirtualHost>
