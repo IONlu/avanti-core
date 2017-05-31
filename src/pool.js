@@ -17,7 +17,7 @@ class Pool {
             'listen.group': 'www-data',
             pm: 'dynamic',
             'pm.max_children': 6,
-            'pm.start_servers': 2,
+            'pm.start_servers': 1,
             'pm.min_spare_servers': 1,
             'pm.max_spare_servers': 3,
             'pm.max_requests': 500,
