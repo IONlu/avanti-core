@@ -17,6 +17,7 @@
     "knex": "^0.13.0",
     "mkdirp-promise": "^5.0.1",
     "pad": "^1.1.0",
+    "semver": "^5.3.0",
     "sqlite3": "^3.1.8",
     "tape": "^4.6.3",
     "yargonaut": "^1.1.2",
