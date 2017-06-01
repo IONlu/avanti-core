@@ -80,7 +80,7 @@ class Client {
             while (hosts.length)
             {
                 let host = hosts.pop();
-                await this.removeHost(host);
+                await this.host(host).remove();
             }
         }
 
@@ -96,14 +96,6 @@ class Client {
 
     host(hostname) {
         return (new Host(this, hostname));
-    }
-
-    async addHost(hostname, options) {
-        await this.host(hostname).create(options);
-    }
-
-    async removeHost(hostname) {
-        await this.host(hostname).remove();
     }
 
     async hosts() {

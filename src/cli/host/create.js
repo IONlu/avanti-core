@@ -15,7 +15,7 @@ export const execute = async (options) => {
     }
 
     try {
-        await (new Client(options.client)).addHost(options.host, options);
+        await (new Client(options.client)).host(options.host).create(options);
     } catch(e) {
         process.exitCode = 1;
         process.stderr.write(chalk.red(chalk.bold('ERROR:') + ' ' + e) + '\n');
