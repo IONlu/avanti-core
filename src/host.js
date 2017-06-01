@@ -136,10 +136,10 @@ class Host {
             Task.run('apache.vhost.remove', {
                 hostname: this.name
             }),
-            removeVhostFolder(info.path),
             removePool(this),
-            User.remove(info.user, `/var/www/backup/${info.user}`)
+            removeVhostFolder(info.path)
         ]);
+        User.remove(info.user, `/var/www/backup/${info.user}`);
 
         // reload apache
         await Task.run('apache.configtest');
