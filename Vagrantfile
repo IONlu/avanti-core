@@ -38,7 +38,8 @@ Vagrant.configure(2) do |config|
         curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
         sudo add-apt-repository -y ppa:ondrej/php
         sudo add-apt-repository -y ppa:certbot/certbot
-        sudo apt-get update
+        sudo apt-get -y update
+        sudo apt-get -y dist-upgrade
 
         # install different php versions
         sudo apt-get -y install php5.6 php5.6-xml php5.6-curl php5.6-soap php5.6-mysql php5.6-fpm
@@ -67,6 +68,9 @@ Vagrant.configure(2) do |config|
 
         # create symlink for avanti executable
         sudo ln -s /home/vagrant/avanti/bin/avanti /usr/local/bin/avanti
+
+        # cleanup apt packages
+        sudo apt-get -y autoremove
     SCRIPT
 
     config.vm.provision "shell", inline: $script, privileged: false
