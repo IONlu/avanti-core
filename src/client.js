@@ -94,12 +94,16 @@ class Client {
             .delete();
     }
 
-    async addHost(hostname) {
-        await (new Host(this, hostname)).create();
+    host(hostname) {
+        return (new Host(this, hostname));
+    }
+
+    async addHost(hostname, options) {
+        await this.host(hostname).create(options);
     }
 
     async removeHost(hostname) {
-        await (new Host(this, hostname)).remove();
+        await this.host(hostname).remove();
     }
 
     async hosts() {

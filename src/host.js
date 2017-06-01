@@ -1,11 +1,12 @@
 import Promise from 'bluebird';
 import fs from 'fs';
-import exec from './exec.js';
+import exec from './exec';
 import Handlebars from 'handlebars';
 import Pool from './pool.js';
-import Registry from './registry.js';
-import * as User from './helper/user.js';
-import convert from './helper/convert.js';
+import Registry from './registry';
+import * as User from './helper/user';
+import convert from './helper/convert';
+import * as PHP from './helper/php';
 import * as Task from './task';
 
 const readFile  = Promise.promisify(fs.readFile);
@@ -60,9 +61,18 @@ class Host {
         return !! await this.info();
     }
 
-    async create() {
+    async create({ php } = {}) {
         if (await this.exists()) {
             return;
+        }
+
+        // get php version to use
+        if (php) {
+            if (!await PHP.available(php)) {
+                throw new Error(`PHP version ${php} is not available`);
+            }
+        } else {
+            php = await PHP.latest();
         }
 
         // find free username and collect data for database
@@ -78,7 +88,8 @@ class Host {
                 host: this.name,
                 client: this.client.name,
                 user: user,
-                path: home
+                path: home,
+                php
             });
 
         // create user
@@ -97,6 +108,7 @@ class Host {
         await addPool(this);
 
         // reload apache
+        await Task.run('apache.configtest');
         await Task.run('apache.reload');
     }
 
@@ -135,11 +147,13 @@ class Host {
             Task.run('apache.vhost.remove', {
                 hostname: this.name
             }),
-            removeVhostFolder(info.path),
             removePool(this),
-            User.remove(info.user, `/var/www/backup/${info.user}`)
+            removeVhostFolder(info.path)
         ]);
+        User.remove(info.user, `/var/www/backup/${info.user}`);
 
+        // reload apache
+        await Task.run('apache.configtest');
         await Task.run('apache.reload');
 
         await this.db
@@ -168,6 +182,9 @@ class Host {
                 alias: currentAlias.join(',')
             });
         await this.updateHost();
+
+        // reload apache
+        await Task.run('apache.configtest');
         await Task.run('apache.reload');
     }
 
@@ -189,7 +206,36 @@ class Host {
                 alias: currentAlias.join(',')
             });
         await this.updateHost();
+
+        // reload apache
+        await Task.run('apache.configtest');
         await Task.run('apache.reload');
+    }
+
+    async php(php) {
+        if (!(await this.exists())) {
+            throw new Error(`Host "${this.name}" does not exists`);
+        }
+
+        // get php version to use
+        if (php) {
+            if (!await PHP.available(php)) {
+                throw new Error(`PHP version ${php} is not available`);
+            }
+        } else {
+            php = await PHP.latest();
+        }
+
+        // update database
+        await this.db
+            .table('host')
+            .where({
+                client: this.client.name,
+                host: this.name
+            })
+            .update({ php });
+
+        await addPool(this);
     }
 }
 

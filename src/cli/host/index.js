@@ -30,11 +30,15 @@ export const options = {
     'remove-alias': {
         describe: 'remove alias',
         type: 'string'
+    },
+    php: {
+        describe: 'php version',
+        type: 'string'
     }
 };
 
 export const handle = (argv, yargs) => {
-    var actions = ['list', 'create', 'remove', 'create-alias', 'remove-alias'];
+    var actions = ['list', 'create', 'remove', 'create-alias', 'remove-alias', 'php'];
     for (let i = 0; i < actions.length; i++) {
         if (argv[actions[i]]) {
             return require('./' + actions[i]).execute(argv);

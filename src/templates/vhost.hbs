@@ -10,10 +10,14 @@
     CustomLog "|/usr/bin/cronolog {{logsFolder}}/access.log-%Y%m%d" combined
 
     <FilesMatch ".+\.php$">
-        SetHandler "proxy:unix:/run/php/{{user}}.sock|fcgi://localhost"
+        SetHandler "proxy:unix:/run/php/{{user}}.sock|fcgi://{{name}}"
     </FilesMatch>
 
-    <Directory {{documentRoot}}>
+    <Proxy "fcgi://{{name}}">
+        ProxySet connectiontimeout=5 timeout=30
+    </Proxy>
+
+    <Directory "{{documentRoot}}">
         AllowOverride All
     </Directory>
 </VirtualHost>

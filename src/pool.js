@@ -20,6 +20,7 @@ class Pool {
             'pm.start_servers': 1,
             'pm.min_spare_servers': 1,
             'pm.max_spare_servers': 3,
+            'pm.max_requests': 500,
             'catch_workers_output': 'yes',
             'php_admin_value[open_basedir]': `${hostInfo.path}`,
             'php_admin_value[session.save_path]': `${hostInfo.path}/sessions`,
@@ -30,16 +31,19 @@ class Pool {
         });
         await Task.run('fpm.pool.create', {
             hostname: this.host.name,
+            php: hostInfo.php,
             data
         });
-        await Task.run('fpm.restart');
+        await Task.run('fpm.configtest');
+        await Task.run('fpm.reload');
     }
 
     async remove() {
         await Task.run('fpm.pool.remove', {
             hostname: this.host.name
         });
-        await Task.run('fpm.restart');
+        await Task.run('fpm.configtest');
+        await Task.run('fpm.reload');
     }
 }
 
