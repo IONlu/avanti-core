@@ -52,8 +52,9 @@ Vagrant.configure(2) do |config|
         # install letsencrypt
         sudo apt-get -y install python-certbot-apache
 
-        # install nodejs
+        # install nodejs and npm
         sudo apt-get -y install build-essential nodejs
+        sudo npm -g install npm
 
         # install dev tools
         sudo npm install -g gulp knex
