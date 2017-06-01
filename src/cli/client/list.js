@@ -4,7 +4,7 @@ import { table } from 'table';
 
 export const execute = async () => {
     try {
-        var clients = await Client.all();
+        var clients = await Client.list();
         var rows = clients.map(row => {
             return [
                 row.client,

@@ -99,13 +99,13 @@ class Client {
     }
 
     async hosts() {
-        let result = await Host.allByClient(this);
+        let result = await Host.listByClient(this);
         let hosts = result.map(row => row.host);
         return hosts;
     }
 }
 
-Client.all = async () => {
+Client.list = async () => {
     const db = Registry.get('Database');
     let result = await db
         .table('client')

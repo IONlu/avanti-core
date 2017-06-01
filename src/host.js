@@ -239,7 +239,7 @@ class Host {
     }
 }
 
-Host.all = async () => {
+Host.list = async () => {
     const db = Registry.get('Database');
     let result = await db
         .table('host')
@@ -248,7 +248,7 @@ Host.all = async () => {
     return result;
 };
 
-Host.allByClient = async (client) => {
+Host.listByClient = async (client) => {
     const db = Registry.get('Database');
     let result = await db
         .table('host')
