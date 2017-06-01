@@ -5,9 +5,9 @@ export const run = async ({ php } = {}) => {
     const versions = php
         ? [ php ]
         : await PHP.versions();
-    return Promise.all(versions.map(version => {
-        return exec('service {{service}} stop', {
-            service: `php${version}-fpm`
+    return Promise.all(versions.map(async version => {
+        return await exec('{{bin}} --test', {
+            bin: `php-fpm${version}`
         });
     }));
 };

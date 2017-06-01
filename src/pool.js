@@ -34,6 +34,7 @@ class Pool {
             php: hostInfo.php,
             data
         });
+        await Task.run('fpm.configtest');
         await Task.run('fpm.reload');
     }
 
@@ -41,6 +42,7 @@ class Pool {
         await Task.run('fpm.pool.remove', {
             hostname: this.host.name
         });
+        await Task.run('fpm.configtest');
         await Task.run('fpm.reload');
     }
 }
