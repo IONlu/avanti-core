@@ -54,8 +54,15 @@ Vagrant.configure(2) do |config|
         # install nodejs
         sudo apt-get -y install build-essential nodejs
 
-        sudo a2enmod rewrite proxy proxy_fcgi
+        # install dev tools
+        sudo npm install -g gulp knex
+        sudo apt-get -y install sqlite3
 
+        # enable proxy
+        sudo a2enmod rewrite proxy proxy_fcgi
+        sudo service apache2 restart
+
+        # install npm packages
         cd /home/vagrant/avanti && npm install
 
         # create symlink for avanti executable
