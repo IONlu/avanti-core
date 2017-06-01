@@ -211,6 +211,32 @@ class Host {
         await Task.run('apache.configtest');
         await Task.run('apache.reload');
     }
+
+    async php(php) {
+        if (await !this.exists()) {
+            throw new Error(`Host "${this.name}" does not exists`);
+        }
+
+        // get php version to use
+        if (php) {
+            if (!await PHP.available(php)) {
+                throw new Error(`PHP version ${php} is not available`);
+            }
+        } else {
+            php = await PHP.latest();
+        }
+
+        // update database
+        await this.db
+            .table('host')
+            .where({
+                client: this.client.name,
+                host: this.name
+            })
+            .update({ php });
+
+        await addPool(this);
+    }
 }
 
 Host.all = async () => {
