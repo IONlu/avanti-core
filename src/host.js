@@ -97,6 +97,7 @@ class Host {
         await addPool(this);
 
         // reload apache
+        await Task.run('apache.configtest');
         await Task.run('apache.reload');
     }
 
@@ -140,6 +141,8 @@ class Host {
             User.remove(info.user, `/var/www/backup/${info.user}`)
         ]);
 
+        // reload apache
+        await Task.run('apache.configtest');
         await Task.run('apache.reload');
 
         await this.db
@@ -168,6 +171,9 @@ class Host {
                 alias: currentAlias.join(',')
             });
         await this.updateHost();
+
+        // reload apache
+        await Task.run('apache.configtest');
         await Task.run('apache.reload');
     }
 
@@ -189,6 +195,9 @@ class Host {
                 alias: currentAlias.join(',')
             });
         await this.updateHost();
+
+        // reload apache
+        await Task.run('apache.configtest');
         await Task.run('apache.reload');
     }
 }
