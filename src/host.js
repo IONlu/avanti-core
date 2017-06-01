@@ -213,7 +213,7 @@ class Host {
     }
 
     async php(php) {
-        if (await !this.exists()) {
+        if (!(await this.exists())) {
             throw new Error(`Host "${this.name}" does not exists`);
         }
 
