@@ -5,7 +5,7 @@ VMname = File.basename(Dir.getwd) + "-vagrant"
 
 Vagrant.configure(2) do |config|
 
-    config.vm.box = "ubuntu/trusty64"
+    config.vm.box = "dattn/ubuntu16"
 
     config.vm.network :forwarded_port, guest: 80, host: 8080
 
