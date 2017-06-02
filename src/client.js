@@ -114,4 +114,12 @@ Client.list = async () => {
     return result;
 };
 
+Client.get = async (name) => {
+    var client = new Client(name);
+    if (!(await client.exists())) {
+        throw new Error(`Client "${name}" does not exist`);
+    }
+    return client;
+};
+
 export default Client;

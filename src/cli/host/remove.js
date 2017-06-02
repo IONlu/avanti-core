@@ -1,4 +1,5 @@
 import Client from '../../client.js';
+import Host from '../../host.js';
 import chalk from 'chalk';
 
 export const execute = async (options) => {
@@ -8,14 +9,14 @@ export const execute = async (options) => {
         return;
     }
 
-    if (!options.client) {
-        process.exitCode = 1;
-        process.stderr.write(chalk.red('Missing required argument: client') + '\n');
-        return;
-    }
-
     try {
-        await (new Client(options.client)).host(options.host).remove();
+        var host;
+        if (options.client) {
+            host = (await Client.get(options.client)).host(options.host);
+        } else {
+            host = await Host.get(options.host);
+        }
+        await host.remove();
     } catch(e) {
         process.exitCode = 1;
         process.stderr.write(chalk.red(chalk.bold('ERROR:') + ' ' + e) + '\n');

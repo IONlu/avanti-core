@@ -9,14 +9,14 @@ export const execute = async (options) => {
         return;
     }
 
-    if (!options.client) {
-        process.exitCode = 1;
-        process.stderr.write(chalk.red('Missing required argument: client') + '\n');
-        return;
-    }
-
     try {
-        await (new Host(new Client(options.client), options.host)).createAlias(options['create-alias']);
+        var host;
+        if (options.client) {
+            host = (await Client.get(options.client)).host(options.host);
+        } else {
+            host = await Host.get(options.host);
+        }
+        await host.createAlias(options['create-alias']);
     } catch(e) {
         process.exitCode = 1;
         process.stderr.write(chalk.red(chalk.bold('ERROR:') + ' ' + e) + '\n');

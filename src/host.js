@@ -8,6 +8,7 @@ import * as User from './helper/user';
 import convert from './helper/convert';
 import * as PHP from './helper/php';
 import * as Task from './task';
+import Client from './client';
 
 const readFile  = Promise.promisify(fs.readFile);
 
@@ -214,7 +215,7 @@ class Host {
 
     async php(php) {
         if (!(await this.exists())) {
-            throw new Error(`Host "${this.name}" does not exists`);
+            throw new Error(`Host "${this.name}" does not exist`);
         }
 
         // get php version to use
@@ -258,6 +259,23 @@ Host.listByClient = async (client) => {
         })
         .orderBy('host');
     return result;
+};
+
+Host.get = async (name) => {
+    const db = Registry.get('Database');
+    let result = await db
+        .table('host')
+        .select('client')
+        .where({
+            host: name
+        });
+    if (!result.length) {
+        throw new Error(`Host "${name}" does not exist`);
+    }
+    if (result.length > 1) {
+        throw new Error(`Host "${name}" is not unique`);
+    }
+    return (new Client(result[0].client)).host(name);
 };
 
 export default Host;
