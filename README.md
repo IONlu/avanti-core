@@ -5,16 +5,6 @@ The goal is to have an [FastCGI Pool Manager (**FPM**)](https://secure.php.net/m
 
 Domains get assigned a pool of PHP processes that they can spawn.
 
-## development
-
-### Vagrant box
-
-```
-cd /path/to/avanti/repo
-vagrant up
-vagrant ssh
-```
-
 ## Requirements
 **For now** you need to add the _multiverse_ repository because of **libapache2-mod-fastcgi**
 
@@ -26,17 +16,35 @@ apt dist-upgrade
 
 #### Install required packages
 ```
-apt install apache2 cronolog letsencrypt sqlite3
-apt install php php-fpm libapache2-mod-fastcgi
-apt install nodejs nodejs-legacy npm
-npm install -g node-gyp
-a2enmod rewrite proxy proxy_fcgi
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+sudo add-apt-repository -y ppa:ondrej/php
+sudo add-apt-repository -y ppa:certbot/certbot
+sudo apt-get -y update
+
+# install different php versions
+sudo apt-get -y install php5.6 php5.6-xml php5.6-curl php5.6-soap php5.6-mysql php5.6-fpm
+sudo apt-get -y install php7.0 php7.0-xml php7.0-curl php7.0-soap php7.0-mysql php7.0-fpm
+sudo apt-get -y install php7.1 php7.1-xml php7.1-curl php7.1-soap php7.1-mysql php7.1-fpm
+
+# install apache
+sudo apt-get -y install apache2 libapache2-mod-fastcgi cronolog
+
+# install letsencrypt
+sudo apt-get -y install python-certbot-apache
+
+# install nodejs and npm
+sudo apt-get -y install build-essential nodejs
+sudo npm -g install npm@4
+
+# enable proxy
+sudo a2enmod rewrite proxy proxy_fcgi
+sudo service apache2 restart
 ```
 
 ## Installation
 #### Using npm
 ```
-sudo npm -g install avanti-core
+sudo npm -g install avanti-core avanti-cli
 ```
 
 ## Commands
