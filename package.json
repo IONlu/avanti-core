@@ -35,7 +35,6 @@
     "gulp-babel": "^6.1.2"
   },
   "scripts": {
-    "test": "tape test/*.js",
     "prepublish": "gulp build"
   },
   "repository": {
