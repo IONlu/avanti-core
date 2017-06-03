@@ -40,7 +40,8 @@ const initDatabase = async (target) => {
         });
 };
 
-const installSkeleton = async (target) => {
+const installSkeleton = async () => {
+    const target = process.env.AVANTI_PATH || '/opt/avanti';
     return new Promise((resolve) => {
         fs.access(target, fs.R_OK, async (err) => {
             if (err) {
