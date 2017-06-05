@@ -3,7 +3,6 @@ import Host from './host.js';
 import * as User from './helper/user.js';
 import Registry from './registry.js';
 import convert from './helper/convert.js';
-import inquirer from 'inquirer';
 
 // private functions
 const createHomeFolder = async (name, home) => {
@@ -64,24 +63,10 @@ class Client {
         }
 
         let hosts = await this.hosts();
-        if (hosts.length) {
-            process.stdout.write('The following hosts will be deleted:\n');
-            process.stdout.write(hosts.join(', ') + '\n');
-            let { proceed } = await inquirer.prompt([{
-                name: 'proceed',
-                type: 'confirm',
-                message: 'Are you sure you want to proceed?',
-                default: false
-            }]);
-            if (!proceed) {
-                return;
-            }
-
-            while (hosts.length)
-            {
-                let host = hosts.pop();
-                await this.host(host).remove();
-            }
+        while (hosts.length)
+        {
+            let host = hosts.pop();
+            await this.host(host).remove();
         }
 
         await User.remove(info.user, `/var/www/backup/${info.user}`);
