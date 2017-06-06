@@ -5,7 +5,7 @@ const get = function get(object, property) {
 
     const [ key, propertyPart ] = property.split('.', 2);
 
-    if (!object[key]) {
+    if (!object.hasOwnProperty(key)) {
         throw `Config key "${key}" missing`;
     }
 
