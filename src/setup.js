@@ -6,6 +6,7 @@ import fs from 'fs';
 import exec from './exec.js';
 import chalk from 'chalk';
 import Knex from 'knex';
+import dotenv from 'dotenv';
 
 const initDatabase = async (target) => {
     var db = Knex({
@@ -71,6 +72,11 @@ export default async () => {
 
     // install skeleton
     await installSkeleton(target);
+
+    // init dotenv
+    dotenv.config({
+        path: target
+    });
 
     // load config
     Registry.set('Config', new Config(target + '/config.json'));
