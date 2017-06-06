@@ -75,7 +75,7 @@ export default async () => {
 
     // init dotenv
     dotenv.config({
-        path: target
+        path: target + '/.env'
     });
 
     // load config
