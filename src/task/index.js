@@ -1,4 +1,20 @@
-import chalk from 'chalk';
+import winston from 'winston';
+
+// init task logger
+export const logger = new winston.Logger({
+    levels: {
+        error: 0,
+        warning: 1,
+        done: 2,
+        run: 3
+    },
+    colors: {
+        error: 'red',
+        warning: 'yellow',
+        done: 'green',
+        run: 'blue'
+    }
+});
 
 export class Warning extends Error {
     constructor(message) {
@@ -8,17 +24,17 @@ export class Warning extends Error {
 }
 
 export const run = async (name, args) => {
-    process.stdout.write(chalk.blue('Task: ' + name + ' [run]\n'));
+    logger.run(name);
     try {
         var task = require('./' + name.replace(/\./g, '/'));
         await task.run(args);
     } catch (err) {
         if (err instanceof Warning) {
-            process.stdout.write(chalk.yellow('Task: ' + name + ' [warning] ' + err.message + '\n'));
+            logger.warning('%s :: %s', name, err.message);
             return;
         }
-        process.stdout.write(chalk.red('Task: ' + name + ' [error] ' + err.message + '\n'));
+        logger.error('%s :: %s', name, err.message);
         throw err;
     }
-    process.stdout.write(chalk.green('Task: ' + name + ' [ok]\n'));
+    logger.done(name);
 };
