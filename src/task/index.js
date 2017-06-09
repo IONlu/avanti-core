@@ -1,7 +1,8 @@
-import winston from 'winston';
+import Log from '../log';
 
 // init task logger
-export const logger = new winston.Logger({
+export const logger = new Log.Logger({
+    level: 'run',
     levels: {
         error: 0,
         warning: 1,
@@ -13,7 +14,8 @@ export const logger = new winston.Logger({
         warning: 'yellow',
         done: 'green',
         run: 'blue'
-    }
+    },
+    transports: []
 });
 
 export class Warning extends Error {
