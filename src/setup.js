@@ -1,9 +1,10 @@
 import mkdirp from 'mkdirp';
-import Registry from './registry.js';
-import Config from './config.js';
+import Registry from './registry';
+import Config from './config';
 import path from 'path';
 import fs from 'fs';
-import exec from './exec.js';
+import exec from './exec';
+import { init as initLog } from './log';
 import chalk from 'chalk';
 import Knex from 'knex';
 import dotenv from 'dotenv';
@@ -42,15 +43,16 @@ const initDatabase = async (target) => {
 };
 
 const installSkeleton = async (target) => {
-    return new Promise((resolve) => {
-        fs.access(target, fs.R_OK, async (err) => {
+    return new Promise((resolve, reject) => {
+        fs.readdir(target, async (err, files) => {
             if (err) {
+                reject(err);
+                return;
+            }
+
+            if (!files.length) {
                 process.stdout.write(chalk.blue('Copy skeleton ...'));
                 try {
-
-                    // create folder
-                    await mkdirp(path.dirname(target));
-
                     // copy skeleton
                     const skeleton = path.dirname(__dirname) + '/skeleton';
                     await exec('cp -r {{skeleton}} {{target}}', { skeleton, target });
@@ -61,6 +63,7 @@ const installSkeleton = async (target) => {
                 }
                 process.stdout.write(chalk.green(' [ok]\n'));
             }
+
             resolve();
         });
 
@@ -68,7 +71,17 @@ const installSkeleton = async (target) => {
 };
 
 export default async () => {
+    // create target folder
     const target = process.env.AVANTI_PATH || '/opt/avanti';
+    await mkdirp(target);
+
+    // init logger
+    await initLog(target);
+
+    // check if executed as root
+    if (process.getuid() !== 0) {
+        throw new Error('Avanti needs root privileges');
+    }
 
     // install skeleton
     await installSkeleton(target);
