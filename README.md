@@ -9,22 +9,24 @@ Domains get assigned a pool of PHP processes that they can spawn.
 **For now** you need to add the _multiverse_ repository because of **libapache2-mod-fastcgi**
 
 #### Update server
-```
+``` bash
 apt update
 apt dist-upgrade
 ```
 
 #### Install required packages
-```
+``` bash
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo add-apt-repository -y ppa:ondrej/php
 sudo add-apt-repository -y ppa:certbot/certbot
 sudo apt-get -y update
 
 # install different php versions
-sudo apt-get -y install php5.6 php5.6-xml php5.6-curl php5.6-soap php5.6-mysql php5.6-fpm
-sudo apt-get -y install php7.0 php7.0-xml php7.0-curl php7.0-soap php7.0-mysql php7.0-fpm
-sudo apt-get -y install php7.1 php7.1-xml php7.1-curl php7.1-soap php7.1-mysql php7.1-fpm
+for VERSION in "5.6" "7.0" "7.1"; do
+    sudo apt-get -y install \
+    php$VERSION php$VERSION-xml php$VERSION-curl \
+    php$VERSION-soap php$VERSION-mysql php$VERSION-fpm
+done
 
 # install apache
 sudo apt-get -y install apache2 libapache2-mod-fastcgi cronolog
@@ -33,17 +35,24 @@ sudo apt-get -y install apache2 libapache2-mod-fastcgi cronolog
 sudo apt-get -y install python-certbot-apache
 
 # install nodejs and npm
-sudo apt-get -y install build-essential nodejs
-sudo npm -g install npm@4
+curl -sSL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get -y install nodejs build-essential nodejs
+
+# install dev tools
+sudo npm install -g gulp knex
+sudo apt-get -y install sqlite3
 
 # enable proxy
 sudo a2enmod rewrite proxy proxy_fcgi
 sudo service apache2 restart
+
+# cleanup apt packages
+sudo apt-get -y autoremove
 ```
 
 ## Installation
 #### Using npm
-```
+``` bash
 sudo npm -g install avanti-core avanti-cli
 ```
 
@@ -51,6 +60,6 @@ sudo npm -g install avanti-core avanti-cli
 Avanti needs to be executed as **root** user
 #### help
 Get an overview of the available commands
-```
+``` bash
 avanti --help
 ```
