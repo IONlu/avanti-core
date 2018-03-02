@@ -16,7 +16,8 @@ apt dist-upgrade
 
 #### Install required packages
 ``` bash
-curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+# install apt repositories
+curl -sSL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo add-apt-repository -y ppa:ondrej/php
 sudo add-apt-repository -y ppa:certbot/certbot
 sudo apt-get -y update
@@ -35,8 +36,7 @@ sudo apt-get -y install apache2 libapache2-mod-fastcgi cronolog
 sudo apt-get -y install python-certbot-apache
 
 # install nodejs and npm
-curl -sSL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-sudo apt-get -y install nodejs build-essential nodejs
+sudo apt-get -y install build-essential nodejs
 
 # install dev tools
 sudo npm install -g gulp knex
