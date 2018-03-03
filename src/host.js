@@ -33,6 +33,12 @@ const removePool = async (host) => {
     await (new Pool(host)).remove();
 };
 
+const convertHostData = host => {
+    host.alias = host.alias ? host.alias.split(',') : [];
+    host.options = host.options ? JSON.parse(host.options) : {};
+    return host;
+};
+
 // load and compile vhost template
 const loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
     .then(function(template) {
@@ -55,6 +61,9 @@ class Host {
                 client: this.client.name
             })
             .limit(1);
+        if (result) {
+            result = convertHostData(result)
+        }
         return result;
     }
 
@@ -126,7 +135,7 @@ class Host {
             user: info.user,
             documentRoot,
             logsFolder,
-            alias: info.alias? info.alias.split(',') : null
+            alias: info.alias
         }));
         await Task.run('apache.vhost.create', {
             hostname: this.name,
@@ -168,7 +177,7 @@ class Host {
 
     async createAlias(alias) {
         let info = await this.info();
-        var currentAlias = info.alias? info.alias.split(',') : [];
+        var currentAlias = info.alias;
         if (currentAlias.indexOf(alias) > -1) {
             return;
         }
@@ -191,7 +200,7 @@ class Host {
 
     async removeAlias(alias) {
         let info = await this.info();
-        var currentAlias = info.alias? info.alias.split(',') : [];
+        var currentAlias = info.alias;
         var index = currentAlias.indexOf(alias);
         if (index < 0) {
             return;
@@ -246,7 +255,7 @@ Host.list = async () => {
         .table('host')
         .select('*')
         .orderBy('host');
-    return result;
+    return result.map(convertHostData);
 };
 
 Host.listByClient = async (client) => {
@@ -258,7 +267,7 @@ Host.listByClient = async (client) => {
             client: client.name
         })
         .orderBy('host');
-    return result;
+    return result.map(convertHostData);
 };
 
 Host.get = async (name) => {
