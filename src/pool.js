@@ -41,8 +41,7 @@ class Pool {
     constructor(host) {
         this.host = host;
     }
-
-
+    
     async create() {
         const hostInfo = await this.host.info();
 

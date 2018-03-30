@@ -247,6 +247,61 @@ class Host {
 
         await addPool(this);
     }
+
+    async setOption(type, key, value) {
+        if (['php'].indexOf(type) === -1) {
+            throw new Error(`Invalid option type "${type}"`);
+        }
+
+        // update options
+        let { options } = await this.info()
+        if (!options[type]) {
+            options[type] = {}
+        }
+        options[type][key] = value
+
+        // update database
+        await this.db
+            .table('host')
+            .where({
+                client: this.client.name,
+                host: this.name
+            })
+            .update({
+                options: JSON.stringify(options)
+            });
+
+        // update pool and host
+        await addPool(this)
+        await this.updateHost()
+    }
+
+    async removeOption(type, key) {
+        if (['php'].indexOf(type) === -1) {
+            throw new Error(`Invalid option type "${type}"`);
+        }
+
+        // update options
+        let { options } = await this.info()
+        if (options[type] && options[type][key]) {
+            delete options[type][key]
+
+            // update database
+            await this.db
+                .table('host')
+                .where({
+                    client: this.client.name,
+                    host: this.name
+                })
+                .update({
+                    options: JSON.stringify(options)
+                });
+
+            // update pool and host
+            await addPool(this)
+            await this.updateHost()
+        }
+    }
 }
 
 Host.list = async () => {
