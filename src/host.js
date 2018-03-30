@@ -285,9 +285,7 @@ class Host {
                 options: JSON.stringify(options)
             });
 
-        // update pool and host
-        await addPool(this)
-        await this.updateHost()
+        await this.refresh()
     }
 
     async removeOption(type, key) {
@@ -313,10 +311,14 @@ class Host {
                     options: JSON.stringify(options)
                 });
 
-            // update pool and host
-            await addPool(this)
-            await this.updateHost()
+            await this.refresh()
         }
+    }
+
+    async refresh () {
+        // update pool and host
+        await addPool(this)
+        await this.updateHost()
     }
 }
 
