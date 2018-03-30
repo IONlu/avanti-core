@@ -1,15 +1,11 @@
-import Promise from 'bluebird';
-import fs from 'fs';
-const unlink = Promise.promisify(fs.unlink);
-import { Warning } from '../../../task';
+import { remove } from '../../../utils/file'
 
 export const run = async ({ hostname }) => {
-    try {
-        return await unlink(`/etc/apache2/sites-available/${hostname}.conf`);
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            throw new Warning(err.message);
-        }
-        throw err;
-    }
+    let mainFile = `/etc/apache2/sites-available/${hostname}.conf`
+    let customFile = `/etc/apache2/avanti/${hostname}.conf`
+    
+    return Promise.all([
+        remove(customFile),
+        remove(mainFile)
+    ])
 };

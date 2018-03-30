@@ -3,7 +3,10 @@ import path from 'path';
 import semver from 'semver';
 
 export const versions = async () => {
-    const folders = await globby('/etc/php/*');
+    const folders = await globby('/etc/php/*', {
+        onlyFiles: false,
+        onlyDirectories: true
+    });
     if (!folders.length) {
         throw new Error('No PHP version found');
     }

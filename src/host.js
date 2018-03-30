@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import fs from 'fs';
+import path from 'path';
 import exec from './exec';
 import Handlebars from 'handlebars';
 import Pool from './pool.js';
@@ -33,6 +34,23 @@ const removePool = async (host) => {
     await (new Pool(host)).remove();
 };
 
+const convertHostData = host => {
+    host.alias = host.alias ? host.alias.split(',') : [];
+    host.options = host.options ? JSON.parse(host.options) : {};
+    return host;
+};
+
+const getDocumentRoot = info => {
+    let documentRoot = info.options.host && info.options.host.documentRoot
+        ? path.normalize(info.options.host.documentRoot)
+        : '.'
+    return (
+        info.path + '/web/' + documentRoot
+            .replace(/^[\/\.]+/, '')
+            .replace(/\/+$/, '')
+    ).replace(/\/+$/, '')
+}
+
 // load and compile vhost template
 const loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
     .then(function(template) {
@@ -55,6 +73,9 @@ class Host {
                 client: this.client.name
             })
             .limit(1);
+        if (result) {
+            result = convertHostData(result)
+        }
         return result;
     }
 
@@ -119,14 +140,14 @@ class Host {
             loadTemplate
         ]);
 
-        const documentRoot = `${info.path}/web`;
+        const documentRoot = getDocumentRoot(info);
         const logsFolder = `${info.path}/logs`;
         let data = template(Object.assign(this, {
             port: 80,
             user: info.user,
             documentRoot,
             logsFolder,
-            alias: info.alias? info.alias.split(',') : null
+            alias: info.alias
         }));
         await Task.run('apache.vhost.create', {
             hostname: this.name,
@@ -168,7 +189,7 @@ class Host {
 
     async createAlias(alias) {
         let info = await this.info();
-        var currentAlias = info.alias? info.alias.split(',') : [];
+        var currentAlias = info.alias;
         if (currentAlias.indexOf(alias) > -1) {
             return;
         }
@@ -191,7 +212,7 @@ class Host {
 
     async removeAlias(alias) {
         let info = await this.info();
-        var currentAlias = info.alias? info.alias.split(',') : [];
+        var currentAlias = info.alias;
         var index = currentAlias.indexOf(alias);
         if (index < 0) {
             return;
@@ -238,6 +259,67 @@ class Host {
 
         await addPool(this);
     }
+
+    async setOption(type, key, value) {
+        let types = [ 'php', 'host' ]
+        if (types.indexOf(type) === -1) {
+            let validTypes = types.join(', ')
+            throw new Error(`Invalid option type "${type}". Valid types are: ${validTypes}`);
+        }
+
+        // update options
+        let { options } = await this.info()
+        if (!options[type]) {
+            options[type] = {}
+        }
+        options[type][key] = value
+
+        // update database
+        await this.db
+            .table('host')
+            .where({
+                client: this.client.name,
+                host: this.name
+            })
+            .update({
+                options: JSON.stringify(options)
+            });
+
+        await this.refresh()
+    }
+
+    async removeOption(type, key) {
+        let types = [ 'php', 'host' ]
+        if (types.indexOf(type) === -1) {
+            let validTypes = types.join(', ')
+            throw new Error(`Invalid option type "${type}". Valid types are: ${validTypes}`);
+        }
+
+        // update options
+        let { options } = await this.info()
+        if (options[type] && options[type][key]) {
+            delete options[type][key]
+
+            // update database
+            await this.db
+                .table('host')
+                .where({
+                    client: this.client.name,
+                    host: this.name
+                })
+                .update({
+                    options: JSON.stringify(options)
+                });
+
+            await this.refresh()
+        }
+    }
+
+    async refresh () {
+        // update pool and host
+        await addPool(this)
+        await this.updateHost()
+    }
 }
 
 Host.list = async () => {
@@ -246,7 +328,7 @@ Host.list = async () => {
         .table('host')
         .select('*')
         .orderBy('host');
-    return result;
+    return result.map(convertHostData);
 };
 
 Host.listByClient = async (client) => {
@@ -258,7 +340,7 @@ Host.listByClient = async (client) => {
             client: client.name
         })
         .orderBy('host');
-    return result;
+    return result.map(convertHostData);
 };
 
 Host.get = async (name) => {
