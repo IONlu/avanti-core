@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import fs from 'fs';
+import path from 'path';
 import exec from './exec';
 import Handlebars from 'handlebars';
 import Pool from './pool.js';
@@ -38,6 +39,17 @@ const convertHostData = host => {
     host.options = host.options ? JSON.parse(host.options) : {};
     return host;
 };
+
+const getDocumentRoot = info => {
+    let documentRoot = info.options.host && info.options.host.documentRoot
+        ? path.normalize(info.options.host.documentRoot)
+        : '.'
+    return (
+        info.path + '/web/' + documentRoot
+            .replace(/^[\/\.]+/, '')
+            .replace(/\/+$/, '')
+    ).replace(/\/+$/, '')
+}
 
 // load and compile vhost template
 const loadTemplate = readFile(__dirname + '/templates/vhost.hbs', 'utf-8')
@@ -128,7 +140,7 @@ class Host {
             loadTemplate
         ]);
 
-        const documentRoot = `${info.path}/web`;
+        const documentRoot = getDocumentRoot(info);
         const logsFolder = `${info.path}/logs`;
         let data = template(Object.assign(this, {
             port: 80,
