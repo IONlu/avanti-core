@@ -1,7 +1,16 @@
-import Promise from 'bluebird';
-import fs from 'fs';
-const writeFile = Promise.promisify(fs.writeFile);
+import { create, exists } from '../../../utils/file'
 
 export const run = async ({ hostname, data }) => {
-    await writeFile(`/etc/apache2/sites-available/${hostname}.conf`, data);
+    let mainFile = `/etc/apache2/sites-available/${hostname}.conf`
+    let customFile = `/etc/apache2/avanti/${hostname}.conf`
+
+    return Promise.all([
+        create(mainFile, data),
+        exists(customFile)
+            .then(exists => {
+                if (!exists) {
+                    create(customFile)
+                }
+            })
+    ]);
 };
