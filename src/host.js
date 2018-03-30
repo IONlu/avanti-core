@@ -249,8 +249,10 @@ class Host {
     }
 
     async setOption(type, key, value) {
-        if (['php'].indexOf(type) === -1) {
-            throw new Error(`Invalid option type "${type}"`);
+        let types = [ 'php', 'host' ]
+        if (types.indexOf(type) === -1) {
+            let validTypes = types.join(', ')
+            throw new Error(`Invalid option type "${type}". Valid types are: ${validTypes}`);
         }
 
         // update options
@@ -277,8 +279,10 @@ class Host {
     }
 
     async removeOption(type, key) {
-        if (['php'].indexOf(type) === -1) {
-            throw new Error(`Invalid option type "${type}"`);
+        let types = [ 'php', 'host' ]
+        if (types.indexOf(type) === -1) {
+            let validTypes = types.join(', ')
+            throw new Error(`Invalid option type "${type}". Valid types are: ${validTypes}`);
         }
 
         // update options
