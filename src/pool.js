@@ -23,6 +23,7 @@ class Pool {
             'pm.max_requests': 500,
             'catch_workers_output': 'yes',
             'php_admin_value[open_basedir]': `${hostInfo.path}`,
+            'php_admin_value[sys_temp_dir]': `${hostInfo.path}/temp`,
             'php_admin_value[session.save_path]': `${hostInfo.path}/sessions`,
             'php_admin_value[disable_functions]': 'exec,mail,passthru,popen,proc_open,show_source,shell,shell_exec,symlink,system,phpinfo',
             'php_admin_value[sendmail_path]': `/usr/sbin/sendmail -t -i -f webmaster@${this.host.name} `
