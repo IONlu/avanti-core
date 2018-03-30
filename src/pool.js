@@ -20,6 +20,7 @@ const getFpmOptions = (host, hostInfo) => {
 
 const getPhpOptions = (host, hostInfo) => {
     return convertPhpOptions({
+        ...(hostInfo.options.php || {}),
         open_basedir: hostInfo.path,
         sys_temp_dir: hostInfo.path + '/temp',
         'session.save_path': hostInfo.path + '/sessions',
