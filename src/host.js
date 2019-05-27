@@ -4,6 +4,7 @@ import path from 'path';
 import exec from './exec';
 import Handlebars from 'handlebars';
 import Pool from './pool.js';
+import Ftp from './ftp.js';
 import Registry from './registry';
 import * as User from './helper/user';
 import convert from './helper/convert';
@@ -319,6 +320,14 @@ class Host {
         // update pool and host
         await addPool(this)
         await this.updateHost()
+    }
+
+    async createFtp(passwd) {
+        await (new Ftp(this)).create(passwd);
+    }
+
+    async removeFtp() {
+        await (new Ftp(this)).remove();
     }
 }
 
