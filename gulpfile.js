@@ -12,10 +12,10 @@ gulp.task('templates', () =>
         .pipe(gulp.dest('dist'))
 );
 
-gulp.task('build', ['scripts', 'templates']);
+gulp.task('build', gulp.parallel('scripts', 'templates'));
 
 gulp.task('watch', () =>
     gulp.watch('src/**/*.js', ['build'])
 );
 
-gulp.task('default', ['build', 'watch']);
+gulp.task('default', gulp.series('build', 'watch'));
