@@ -9,14 +9,19 @@ function replacePlaceholders(string, params) {
     });
 }
 
-export default async (command, params, stdin) => {
+export default async (command, params, stdin, env = {}) => {
     return new Promise((resolve, reject) => {
         let commandParts = command.split(/ +/).map(part => {
             return replacePlaceholders(part, params)
         });
         let result = '';
         let error = '';
-        let child = spawn(commandParts[0], commandParts.slice(1));
+        let child = spawn(commandParts[0], commandParts.slice(1), {
+            env: {
+                ...process.env,
+                ...env
+            }
+        });
         child.on('error', reject);
         child.stderr.on('data', data => error += data);
         child.stdout.on('data', data => result += data);
@@ -24,7 +29,14 @@ export default async (command, params, stdin) => {
             if (code === 0) {
                 resolve(result);
             } else {
-                reject(error);
+                let err;
+                if (code === 3) {
+                    err = new Error('Service is not running/installed');
+                } else {
+                    err = new Error('Unknown error');
+                }
+                err.code = code;
+                reject(err);
             }
         });
         if (stdin) {
