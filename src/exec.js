@@ -29,7 +29,7 @@ export default async (command, params, stdin, env = {}) => {
             if (code === 0) {
                 resolve(result);
             } else {
-                let err = new Error('Code has been exited with code ' + code);
+                let err = new Error('Command exited with code ' + code);
                 err.code = code;
                 reject(err);
             }
