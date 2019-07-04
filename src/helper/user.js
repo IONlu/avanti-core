@@ -18,13 +18,13 @@ const renumber = (name, number) => {
 
 // returns users home folder
 const home = async (name) => {
-    return await exec('eval echo ~{{name}}', { name });
+    return await exec(__dirname + '/../scripts/home.sh {{name}}', { name });
 };
 
 // checks if user exists
 const exists = async (name) => {
     try {
-        await exec('id -u {{name}} 2> /dev/null', { name });
+        await exec('id -u {{name}}', { name });
         return true;
     } catch (e) {
         return false;
@@ -46,7 +46,7 @@ const remove = async (name, backupFolder) => {
     if (! await exists(name)) {
         return;
     }
-
+    
     const homeFolder = await home(name);
 
     if (backupFolder) {

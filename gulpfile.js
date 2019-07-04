@@ -7,12 +7,12 @@ gulp.task('scripts', () =>
         .pipe(gulp.dest('dist'))
 );
 
-gulp.task('templates', () =>
-    gulp.src('src/**/*.hbs')
+gulp.task('static', () =>
+    gulp.src('src/**/*.@(hbs|sh)')
         .pipe(gulp.dest('dist'))
 );
 
-gulp.task('build', gulp.parallel('scripts', 'templates'));
+gulp.task('build', gulp.parallel('scripts', 'static'));
 
 gulp.task('watch', () =>
     gulp.watch('src/**/*.js', ['build'])
