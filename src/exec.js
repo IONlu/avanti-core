@@ -29,12 +29,7 @@ export default async (command, params, stdin, env = {}) => {
             if (code === 0) {
                 resolve(result);
             } else {
-                let err;
-                if (code === 3) {
-                    err = new Error('Service is not running/installed');
-                } else {
-                    err = new Error('Unknown error');
-                }
+                let err = new Error('Code has been exited with code ' + code);
                 err.code = code;
                 reject(err);
             }
