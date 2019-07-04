@@ -46,24 +46,20 @@ const remove = async (name, backupFolder) => {
     if (! await exists(name)) {
         return;
     }
+    
+    const homeFolder = await home(name);
 
-    try {
-        const homeFolder = await home(name);
+    if (backupFolder) {
+        await exec('mkdir -p {{backupFolder}}', { backupFolder });
 
-        if (backupFolder) {
-            await exec('mkdir -p {{backupFolder}}', { backupFolder });
-
-            // generate a compressed backup of the client's home folder and then remove the home folder
-            await exec('deluser --backup --backup-to {{backupFolder}} --remove-home {{name}}', { name, backupFolder });
-        } else {
-            await exec('deluser --backup --remove-home {{name}}', { name });
-        }
-
-        // for some reason, the '--remove-home' command is not working properly, so we have to delete the home folder "manually"
-        await exec('rm -fr {{homeFolder}}', { homeFolder });
-    } catch (err) {
-        console.error('remove user', err)
+        // generate a compressed backup of the client's home folder and then remove the home folder
+        await exec('deluser --backup --backup-to {{backupFolder}} --remove-home {{name}}', { name, backupFolder });
+    } else {
+        await exec('deluser --backup --remove-home {{name}}', { name });
     }
+
+    // for some reason, the '--remove-home' command is not working properly, so we have to delete the home folder "manually"
+    await exec('rm -fr {{homeFolder}}', { homeFolder });
 };
 
 // returns a valid free user based on name
