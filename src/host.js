@@ -5,6 +5,7 @@ import exec from './exec';
 import Handlebars from 'handlebars';
 import Pool from './pool.js';
 import Ftp from './ftp.js';
+import Ssl from './ssl.js';
 import Registry from './registry';
 import * as User from './helper/user';
 import convert from './helper/convert';
@@ -148,7 +149,9 @@ class Host {
             user: info.user,
             documentRoot,
             logsFolder,
-            alias: info.alias
+            alias: info.alias,
+            ssl: info.ssl,
+            path: info.path
         }));
         await Task.run('apache.vhost.create', {
             hostname: this.name,
@@ -320,6 +323,14 @@ class Host {
         // update pool and host
         await addPool(this)
         await this.updateHost()
+    }
+
+    async createSsl (generate) {
+        await (new Ssl(this)).create(generate);
+    }
+
+    async removeSsl () {
+        await (new Ssl(this)).remove();
     }
 
     async createFtp(passwd) {

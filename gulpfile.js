@@ -15,7 +15,7 @@ gulp.task('static', () =>
 gulp.task('build', gulp.parallel('scripts', 'static'));
 
 gulp.task('watch', () =>
-    gulp.watch('src/**/*.js', ['build'])
+    gulp.watch('src/**/*.js',  gulp.series('build'))
 );
 
 gulp.task('default', gulp.series('build', 'watch'));
