@@ -25,6 +25,9 @@
     </Directory>
 
     Include /etc/apache2/avanti/{{name}}.conf
+
+    RewriteEngine on
+    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
 </VirtualHost>
 
 {{#if ssl}}
@@ -51,7 +54,7 @@
             </Directory>
 
             Include /etc/apache2/avanti/{{name}}.conf
-            Include /etc/letsencrypt/options-ssl-apache.conf
+            #Include /etc/letsencrypt/options-ssl-apache.conf
             SSLCertificateFile {{path}}/certs/fullchain.pem
             SSLCertificateKeyFile {{path}}/certs/privkey.pem
         </VirtualHost>

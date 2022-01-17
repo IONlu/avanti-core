@@ -17,6 +17,7 @@ export default async (command, params, stdin, env = {}) => {
         let result = '';
         let error = '';
         let child = spawn(commandParts[0], commandParts.slice(1), {
+            shell: true,
             env: {
                 ...process.env,
                 ...env
