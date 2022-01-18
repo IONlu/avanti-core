@@ -3,6 +3,7 @@ import { exists } from './utils/file'
 import * as Task from './task';
 import Host from './host.js';
 import exec from './exec';
+import Whois from './helper/whois';
 
 class Ssl {
     constructor(host) {
@@ -10,11 +11,11 @@ class Ssl {
         this.db = Registry.get('Database');
     }
 
-    async create (method) {
+    async enable (method) {
         let hostInfo = await this.host.info();
         if (hostInfo.ssl === 0) {
-            let allowedMethods = ['auto', 'manual']
-
+            let allowedMethods = ['dns', 'apache', 'manual']
+            await this.checkSslModEnabled()
             if (allowedMethods.includes(method)) {
                 if (method === 'manual') {
                     let checkCerts = await this.checkCertsExist(hostInfo.path)
@@ -38,8 +39,32 @@ class Ssl {
                         }
 
                     }
-                } else if (method === 'auto') {
-                    await Task.run('ssl.create', hostInfo);
+                } else if (method === 'dns') {
+                    await this.checkDomainDNSRecords(hostInfo)
+                    await Task.run('ssl.create', {
+                        ...hostInfo,
+                        method
+                    });
+                    let certsEqual = await this.checkCertsEqual(hostInfo.path)
+                    if (certsEqual) {
+                        await this.db
+                        .table('host')
+                        .where({
+                            client: this.host.client.name,
+                            host: this.host.name
+                        })
+                        .update({
+                            ssl: 1
+                        });
+                        await this.host.refresh(this);
+                    } else {
+                        throw new Error('SSL Certs not Equal')
+                    }
+                } else if (method === 'apache') {
+                    await Task.run('ssl.create', {
+                        ...hostInfo,
+                        method
+                    });
                     let certsEqual = await this.checkCertsEqual(hostInfo.path)
                     if (certsEqual) {
                         await this.db
@@ -66,7 +91,8 @@ class Ssl {
         return (new Host(this, hostname));
     }
 
-    async remove () {
+    async disable () {
+        await this.checkSslModEnabled()
         await this.db
             .table('host')
             .where({
@@ -102,6 +128,66 @@ class Ssl {
             }
             throw err;
         }
+    }
+
+    async checkSslModEnabled () {
+        try {
+            await exec('apachectl -t -D DUMP_MODULES | grep ssl_module');
+            return true
+        } catch (err) {
+            if (err.code === 1) {
+                throw new Task.Warning('SSL Module disabled in Apache2');
+            }
+            throw err;
+        }
+    }
+
+    async checkDomainDNSRecords (host) {
+        let domains = [
+            host.host,
+            ...host.alias
+        ]
+        let whois = await this.getWhoisForDomain(host.host)
+        let serverIp = await this.getAvantiServerIP()
+        let promises = []
+        domains.forEach((domain) => {
+            promises.push(this.getCurrentIPForDomain(domain, whois.nserver.split(' ')[0]))
+        })
+        return await Promise.all(promises).then((element) => {
+            element.forEach((ip, index) => {
+                if (ip !== serverIp) {
+                    throw new Task.Warning('DNS Check Error: IP Pointing to Domain Record not same as Server (check ' + domains[index] + ')');
+                }
+            })
+        })
+    }
+
+    async getWhoisForDomain (domain) {
+        try {
+            return await Whois(domain)
+        } catch (err) {
+            throw new Task.Warning(err.message);
+        }
+    }
+
+    async getCurrentIPForDomain (domain, nameserver) {
+        try {
+            return exec('dig {{domain}} @{{nameserver}} +short', {
+                domain,
+                nameserver
+            }).then((element) => {
+                 return element.replace(/(\r\n|\n|\r)/gm, "");
+            })
+        } catch (err) {
+            if (err.code === 1) {
+                throw new Task.Warning('SSL Module disabled in Apache2');
+            }
+            throw err;
+        }
+    }
+
+    async getAvantiServerIP () {
+        return await exec('curl https://ipecho.net/plain')
     }
 }
 

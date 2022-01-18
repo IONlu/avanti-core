@@ -325,12 +325,12 @@ class Host {
         await this.updateHost()
     }
 
-    async createSsl (generate) {
-        await (new Ssl(this)).create(generate);
+    async enableSsl (generate) {
+        await (new Ssl(this)).enable(generate);
     }
 
-    async removeSsl () {
-        await (new Ssl(this)).remove();
+    async disableSsl () {
+        await (new Ssl(this)).disable();
     }
 
     async createFtp(passwd) {

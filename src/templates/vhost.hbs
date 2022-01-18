@@ -34,7 +34,9 @@
     <IfModule mod_ssl.c>
         <VirtualHost *:443>
             ServerName {{name}}
-            ServerAlias{{#each alias}} {{.}}{{/each}}
+            {{#if alias}}
+                ServerAlias{{#each alias}} {{.}}{{/each}}
+            {{/if}}
 
             DocumentRoot {{documentRoot}}
 
