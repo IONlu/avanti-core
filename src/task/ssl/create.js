@@ -20,12 +20,24 @@ export const run = async ({ host, path, method }) => {
             throw new Error('Failed to create certificates using DNS Method')
         }
     }
-    let letsEncryptCertsExist = await Promise.all([exists(`/etc/letsencrypt/live/${host}/privkey.pem`), exists(`/etc/letsencrypt/live/${host}/fullchain.pem`)])
+    let lastmodifiedFolder = await getlastModifiedFolder(host)
+    let letsEncryptCertsExist = await Promise.all([exists(`/etc/letsencrypt/live/${lastmodifiedFolder}/privkey.pem`), exists(`/etc/letsencrypt/live/${lastmodifiedFolder}/fullchain.pem`)])
     if (letsEncryptCertsExist.includes(false)) {
         throw new Error('CertBot Certs not created')
     } else {
-        let fullchain = await readFile(`/etc/letsencrypt/live/${host}/fullchain.pem`)
-        let privkey = await readFile(`/etc/letsencrypt/live/${host}/privkey.pem`)
+        let fullchain = await readFile(`/etc/letsencrypt/live/${lastmodifiedFolder}/fullchain.pem`)
+        let privkey = await readFile(`/etc/letsencrypt/live/${lastmodifiedFolder}/privkey.pem`)
         return Promise.all([create(path + '/certs/fullchain.pem', fullchain), create(path + '/certs/privkey.pem', privkey)])
     }
 };
+
+async function getlastModifiedFolder (domain) {
+    let path = '/etc/letsencrypt/live'
+    return fs.readdirSync(path).filter(function (file) {
+        return file.startsWith(domain) && fs.statSync(path+'/'+file).isDirectory()
+    }).reduce((last, current) => {
+        let currentFileDate = new Date(fs.statSync(path+'/' + current).mtime);
+        let lastFileDate = new Date(fs.statSync(path+'/' + last).mtime);
+        return ( currentFileDate.getTime() > lastFileDate.getTime() ) ? current: last;
+    })
+}

@@ -40,7 +40,7 @@ class Ssl {
 
                     }
                 } else if (method === 'dns') {
-                    await this.checkDomainDNSRecords(hostInfo)
+                    // await this.checkDomainDNSRecords(hostInfo)
                     await Task.run('ssl.create', {
                         ...hostInfo,
                         method
@@ -136,7 +136,7 @@ class Ssl {
 
     async checkSslModEnabled () {
         try {
-            await exec('apachectl -t -D DUMP_MODULES | grep ssl_module');
+            await exec("apachectl -t -D DUMP_MODULES | grep ssl_module | awk '{print $1}'");
             return true
         } catch (err) {
             if (err.code === 1) {
@@ -191,7 +191,7 @@ class Ssl {
     }
 
     async getAvantiServerIP () {
-        return await exec('curl https://ipecho.net/plain')
+        return await exec("ip route get 1 | awk '{print $NF;exit}'")
     }
 
     async checkApacheCertBotPluginInstalled () {
