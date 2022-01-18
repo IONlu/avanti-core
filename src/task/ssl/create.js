@@ -8,7 +8,7 @@ const readFile = Promise.promisify(fs.readFile);
 export const run = async ({ host, path, method }) => {
     if (method === 'apache') {
         try {
-            await exec(`letsencrypt run -d ${host} --apache`);
+            await exec(`letsencrypt certonly -d ${host} --apache --quiet`);
         } catch (err) {
             throw new Error('Failed to create certificates using Apache Method')
         }

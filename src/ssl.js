@@ -61,6 +61,7 @@ class Ssl {
                         throw new Error('SSL Certs not Equal')
                     }
                 } else if (method === 'apache') {
+                    await this.checkDomainDNSRecords(hostInfo)
                     await this.checkApacheCertBotPluginInstalled()
                     await Task.run('ssl.create', {
                         ...hostInfo,
