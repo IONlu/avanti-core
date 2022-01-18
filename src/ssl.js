@@ -61,6 +61,7 @@ class Ssl {
                         throw new Error('SSL Certs not Equal')
                     }
                 } else if (method === 'apache') {
+                    await this.checkApacheCertBotPluginInstalled()
                     await Task.run('ssl.create', {
                         ...hostInfo,
                         method
@@ -81,6 +82,8 @@ class Ssl {
                         throw new Error('SSL Certs not Equal')
                     }
                 }
+            } else {
+                throw new Error('Unknown Method, read the manuals')
             }
         } else {
             throw new Error('SSL already enabled for ' + hostInfo.host)
@@ -188,6 +191,17 @@ class Ssl {
 
     async getAvantiServerIP () {
         return await exec('curl https://ipecho.net/plain')
+    }
+
+    async checkApacheCertBotPluginInstalled () {
+        try {
+            return await exec("dpkg -l | grep -E '^ii' | grep python3-certbot-apache")
+        } catch (err) {
+            if (err.code === 1) {
+                throw new Task.Warning('Apache2 Module not installed  (phyton3-certbot-apache)');
+            }
+            throw err;
+        }
     }
 }
 
