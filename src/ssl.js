@@ -40,7 +40,7 @@ class Ssl {
 
                     }
                 } else if (method === 'dns') {
-                    // await this.checkDomainDNSRecords(hostInfo)
+                    await this.checkDomainNameServersMatchingAvanti(hostInfo)
                     await Task.run('ssl.create', {
                         ...hostInfo,
                         method
@@ -146,6 +146,28 @@ class Ssl {
         }
     }
 
+    async checkDomainNameServersMatchingAvanti (host) {
+        let whois = await this.getWhoisForDomain(host.host)
+        if (whois) {
+            let promises = []
+            let nameservers = whois.nserver.split(' ')
+            nameservers.forEach((el) => {
+                promises.push(this.getCurrentIPForDomain(el))
+            })
+            let getAvantiServerIPs = await this.getCurrentIPForDomain('avanti-dns.mbox.lu')
+            return await Promise.all(promises).then((element) => {
+                let nameserverips = [].concat.apply([], element)
+                nameserverips.forEach((ip) => {
+                    if (!getAvantiServerIPs.includes(ip)) {
+                        throw new Task.Warning('DNS Check Error: Nameserver check failed');
+                    }
+                })
+            })
+        } else {
+            throw new Task.Warning('DNS Check Error: Failed to get Nameservers of ' + host.host);
+        }
+    }
+
     async checkDomainDNSRecords (host) {
         let domains = [
             host.host,
@@ -159,7 +181,7 @@ class Ssl {
         })
         return await Promise.all(promises).then((element) => {
             element.forEach((ip, index) => {
-                if (ip !== serverIp) {
+                if (!ip.includes(serverIp)) {
                     throw new Task.Warning('DNS Check Error: IP Pointing to Domain Record not same as Server (check ' + domains[index] + ')');
                 }
             })
@@ -176,11 +198,16 @@ class Ssl {
 
     async getCurrentIPForDomain (domain, nameserver) {
         try {
-            return exec('dig {{domain}} @{{nameserver}} +short', {
-                domain,
-                nameserver
-            }).then((element) => {
-                 return element.replace(/(\r\n|\n|\r)/gm, "");
+            let params = {
+                domain
+            }
+            if (nameserver) {
+                params.nameserver = '@' + nameserver
+            } else {
+                params.nameserver = ' '
+            }
+            return exec('dig {{domain}} {{nameserver}} +short', params).then((element) => {
+                 return element.trim().split('\n')
             })
         } catch (err) {
             if (err.code === 1) {
