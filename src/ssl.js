@@ -4,6 +4,7 @@ import * as Task from './task';
 import Host from './host.js';
 import exec from './exec';
 import Whois from './helper/whois';
+const { getDomain } = require('tldts');
 
 class Ssl {
     constructor(host) {
@@ -197,9 +198,8 @@ class Ssl {
     }
 
     getDomainOutOfHostname (domain) {
-        var parts = domain.split('.');
-        var upperleveldomain = parts.join('.');
-        return upperleveldomain;
+
+        return getDomain(domain)
     }
 
     async getCurrentIPForDomain (domain, nameserver) {
