@@ -8,8 +8,7 @@ async function call () {
             'Authorization': `Bearer ${token}`
         }
     }).then((element) => {
-        console.log('element', element)
-        process.exit(0)
+        process.exit(1)
     })
     .catch((err) => {
         process.exit(1)
