@@ -14,9 +14,13 @@ export const run = async ({ host, path, method }) => {
         }
     } else if (method === 'dns') {
         try {
-            await exec(`certbot certonly --manual-public-ip-logging-ok --preferred-challenge=dns --agree-tos -m jose@ion.lu --cert-name ${host} -d ${host} --manual`);
+            console.log('test')
+            let output = await exec(`certbot certonly --manual-public-ip-logging-ok --preferred-challenge=dns  --manual-auth-hook /home/vagrant/avanti/avanti-core/src/helper/dnsAcmeHook.js --cert-name jose122233.lu -d jose122233.lu --manual`);
+            console.log('output', output)
+            return;
             // certbot certonly --manual-public-ip-logging-ok --manual --preferred-challenge=dns --agree-tos -m jose@ion.lu --cert-name jose.iondev.lu -d jose.iondev.lu
         } catch (err) {
+            console.log('err', err)
             throw new Error('Failed to create certificates using DNS Method')
         }
     }

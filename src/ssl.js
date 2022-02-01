@@ -45,6 +45,7 @@ class Ssl {
                         ...hostInfo,
                         method
                     });
+                    return;
                     let certsEqual = await this.checkCertsEqual(hostInfo.path)
                     if (certsEqual) {
                         await this.db
@@ -147,9 +148,8 @@ class Ssl {
     }
 
     async checkDomainNameServersMatchingAvanti (host) {
-
-        let whois = await this.getWhoisForDomain(getDomainOutOfHostname(host.host))
-        if (whois) {
+        let whois = await this.getWhoisForDomain(this.getDomainOutOfHostname(host.host))
+        if (whois && whois.nserver) {
             let promises = []
             let nameservers = whois.nserver.split(' ')
             nameservers.forEach((el) => {
@@ -174,7 +174,7 @@ class Ssl {
             host.host,
             ...host.alias
         ]
-        let whois = await this.getWhoisForDomain(getDomainOutOfHostname(host.host))
+        let whois = await this.getWhoisForDomain(this.getDomainOutOfHostname(host.host))
         let serverIp = await this.getAvantiServerIP()
         let promises = []
         domains.forEach((domain) => {
@@ -198,8 +198,9 @@ class Ssl {
     }
 
     getDomainOutOfHostname (domain) {
-        const firstDotIndex = domain.indexOf('.')
-        return domain.substring(firstDotIndex + 1)
+        var parts = domain.split('.');
+        var upperleveldomain = parts.join('.');
+        return upperleveldomain;
     }
 
     async getCurrentIPForDomain (domain, nameserver) {
