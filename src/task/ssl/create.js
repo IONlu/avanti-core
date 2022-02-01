@@ -14,7 +14,8 @@ export const run = async ({ host, path, method }) => {
         }
     } else if (method === 'dns') {
         try {
-            await exec(`certbot certonly --manual-public-ip-logging-ok --preferred-challenge=dns  --manual-auth-hook /home/vagrant/avanti/avanti-core/src/helper/dnsAcmeHook.js --cert-name ${host} -d ${host} --manual --quiet`);
+            let hookScript = process.cwd() + '/src/helper/dnsAcmeHook.js'
+            await exec(`certbot certonly --manual-public-ip-logging-ok --preferred-challenge=dns  --manual-auth-hook ${hookScript} --cert-name ${host} -d ${host} --manual --quiet`);
         } catch (err) {
             throw new Error('Failed to create certificates using DNS Method')
         }
