@@ -15,6 +15,7 @@ export const run = async ({ host, path, method }) => {
     } else if (method === 'dns') {
         try {
             let hookScript =__dirname + '/../scripts/dnsAcmeHook.js'
+            console.log(hookScript)
             await exec(`certbot certonly --manual-public-ip-logging-ok --preferred-challenge=dns  --manual-auth-hook ${hookScript} --cert-name ${host} -d ${host} --manual --quiet`);
         } catch (err) {
             throw new Error('Failed to create certificates using DNS Method')
