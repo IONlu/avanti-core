@@ -45,7 +45,6 @@ class Ssl {
                         ...hostInfo,
                         method
                     });
-                    return;
                     let certsEqual = await this.checkCertsEqual(hostInfo.path)
                     if (certsEqual) {
                         await this.db
