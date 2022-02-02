@@ -2,7 +2,6 @@
 var axios = require('axios');
 
 async function call () {
-
     let token = process.env.ACME_TOKEN
     if (token) {
         await axios.get('https://acme.mbox.lu/' + process.env.CERTBOT_DOMAIN + '/' + process.env.CERTBOT_VALIDATION, {
@@ -21,4 +20,4 @@ async function call () {
     }
 }
 
-await call()
+call()
