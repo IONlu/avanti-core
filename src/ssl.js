@@ -224,7 +224,7 @@ class Ssl {
     }
 
     async getAvantiServerIP () {
-        return await exec("ip route get 1 | awk '{print $NF;exit}'").then((element) => {
+        return await exec("hostname -I | awk '{print $1}'").then((element) => {
              return element.replace(/(\r\n|\n|\r)/gm, "");
         })
     }
