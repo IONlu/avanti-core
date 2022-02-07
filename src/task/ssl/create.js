@@ -1,12 +1,10 @@
 import Promise from 'bluebird';
 import {
-    create,
+    unlink,
     exists
 } from '../../utils/file'
 import fs from 'fs';
 import exec from '../../exec.js';
-
-const readFile = Promise.promisify(fs.readFile);
 
 export const run = async ({
     host,
@@ -38,6 +36,8 @@ export const run = async ({
     } else {
         let fullchain = `/etc/letsencrypt/live/${lastmodifiedFolder}/fullchain.pem`
         let privkey = `/etc/letsencrypt/live/${lastmodifiedFolder}/privkey.pem`
+        await deleteFile(path + '/certs/privkey.pem')
+        await deleteFile(path + '/certs/fullchain.pem')
         return Promise.all(
             [
                 exec('ln -s {{source}} {{destination}}', {
@@ -60,5 +60,13 @@ async function getlastModifiedFolder(domain) {
         let currentFileDate = new Date(fs.statSync(path + '/' + current).mtime);
         let lastFileDate = new Date(fs.statSync(path + '/' + last).mtime);
         return (currentFileDate.getTime() > lastFileDate.getTime()) ? current : last;
+    })
+}
+
+async function deleteFile (filePath) {
+    await exists(filePath, function(exists) {
+        if (exists) {
+            unlink(filePath)
+        }
     })
 }
