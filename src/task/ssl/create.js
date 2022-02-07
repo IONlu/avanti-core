@@ -1,6 +1,6 @@
 import Promise from 'bluebird';
 import {
-    unlink,
+    remove,
     exists
 } from '../../utils/file'
 import fs from 'fs';
@@ -64,9 +64,5 @@ async function getlastModifiedFolder(domain) {
 }
 
 async function deleteFile (filePath) {
-    await exists(filePath, function(exists) {
-        if (exists) {
-            unlink(filePath)
-        }
-    })
+    return await remove(filePath)
 }
