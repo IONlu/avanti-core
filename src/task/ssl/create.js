@@ -30,14 +30,19 @@ export const run = async ({
 
     }
     let lastmodifiedFolder = await getlastModifiedFolder(host)
+
     let letsEncryptCertsExist = await Promise.all([exists(`/etc/letsencrypt/live/${lastmodifiedFolder}/privkey.pem`), exists(`/etc/letsencrypt/live/${lastmodifiedFolder}/fullchain.pem`)])
     if (letsEncryptCertsExist.includes(false)) {
         throw new Error('CertBot Certs not created')
     } else {
         let fullchain = `/etc/letsencrypt/live/${lastmodifiedFolder}/fullchain.pem`
         let privkey = `/etc/letsencrypt/live/${lastmodifiedFolder}/privkey.pem`
-        await deleteFile(path + '/certs/privkey.pem')
-        await deleteFile(path + '/certs/fullchain.pem')
+        if (!fs.existsSync(path + '/certs')){
+            fs.mkdirSync(path + '/certs');
+        } else {
+            await deleteFile(path + '/certs/privkey.pem')
+            await deleteFile(path + '/certs/fullchain.pem')
+        }
         return Promise.all(
             [
                 exec('ln -s {{source}} {{destination}}', {
