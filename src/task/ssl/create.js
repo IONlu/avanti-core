@@ -36,17 +36,17 @@ export const run = async ({
     if (letsEncryptCertsExist.includes(false)) {
         throw new Error('CertBot Certs not created')
     } else {
-        let fullchain = await path.resolve(`/etc/letsencrypt/live/${lastmodifiedFolder}/fullchain.pem`)
-        let privkey = await path.resolve(`/etc/letsencrypt/live/${lastmodifiedFolder}/privkey.pem`)
+        let fullchain = `/etc/letsencrypt/live/${lastmodifiedFolder}/fullchain.pem`
+        let privkey = `/etc/letsencrypt/live/${lastmodifiedFolder}/privkey.pem`
         return Promise.all(
             [
                 exec('ln -s {{source}} {{destination}}', {
                     source: privkey,
-                    destination: path.resolve(path + '/certs/privkey.pem')
+                    destination: path + '/certs/privkey.pem'
                 }),
                 exec('ln -s {{source}} {{destination}}', {
                     source: fullchain,
-                    destination: path.resolve(path + '/certs/fullchain.pem')
+                    destination: path + '/certs/fullchain.pem'
                 }),
             ])
     }
