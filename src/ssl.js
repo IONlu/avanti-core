@@ -35,6 +35,8 @@ class Ssl {
                                 ssl: 1
                             });
                             await this.host.refresh(this);
+                            await Task.run('apache.configtest');
+                            await Task.run('apache.reload');
                         } else {
                             throw new Error('SSL Certs not Equal')
                         }
@@ -58,6 +60,8 @@ class Ssl {
                             ssl: 1
                         });
                         await this.host.refresh(this);
+                        await Task.run('apache.configtest');
+                        await Task.run('apache.reload');
                     } else {
                         throw new Error('SSL Certs not Equal')
                     }
@@ -80,6 +84,8 @@ class Ssl {
                             ssl: 1
                         });
                         await this.host.refresh(this);
+                        await Task.run('apache.configtest');
+                        await Task.run('apache.reload');
                     } else {
                         throw new Error('SSL Certs not Equal')
                     }
@@ -108,6 +114,8 @@ class Ssl {
                 ssl: 0
             });
             await this.host.refresh(this);
+            await Task.run('apache.configtest');
+            await Task.run('apache.reload');
     }
 
     async checkCertsExist (path) {
