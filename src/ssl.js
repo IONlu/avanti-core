@@ -14,6 +14,7 @@ class Ssl {
 
     async enable (method) {
         let hostInfo = await this.host.info();
+        hostInfo.hostAndAliases = this.hostnameAndAliasesString(hostInfo.host, hostInfo.alias)
         if (hostInfo.ssl === 0) {
             let allowedMethods = ['dns', 'apache', 'manual']
             await this.checkSslModEnabled()
@@ -246,6 +247,14 @@ class Ssl {
             }
             throw err;
         }
+    }
+
+    hostnameAndAliasesString (hostname, alias) {
+        let string = hostname
+        alias.forEach((element) => {
+            string += ',' + element
+        })
+        return string
     }
 }
 
