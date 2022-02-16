@@ -290,6 +290,9 @@ class Host {
             });
 
         await this.refresh()
+
+        await Task.run('apache.configtest');
+        await Task.run('apache.reload');
     }
 
     async removeOption(type, key) {
@@ -316,6 +319,10 @@ class Host {
                 });
 
             await this.refresh()
+
+            await Task.run('apache.configtest');
+            await Task.run('apache.reload');
+
         }
     }
 
