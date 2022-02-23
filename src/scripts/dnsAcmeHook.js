@@ -9,9 +9,13 @@ async function call () {
         path: target + '/.env'
     });
 
+    if (!process.env.ACME_SERVER_URL) {
+        throw new Error('ACME SERVER URL MISSING IN CONFIG')
+    }
+
     let token = process.env.ACME_TOKEN
     if (token) {
-        await axios.get('https://acme.mbox.lu/' + process.env.CERTBOT_DOMAIN + '/' + process.env.CERTBOT_VALIDATION, {
+        await axios.get(process.env.ACME_SERVER_URL + '/' + process.env.CERTBOT_DOMAIN + '/' + process.env.CERTBOT_VALIDATION, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

@@ -13,6 +13,7 @@ class Ssl {
     }
 
     async enable (method) {
+        this.envTokensSet()
         let hostInfo = await this.host.info();
         hostInfo.hostAndAliases = this.hostnameAndAliasesString(hostInfo.host, hostInfo.alias)
         if (hostInfo.ssl === 0) {
@@ -104,6 +105,7 @@ class Ssl {
     }
 
     async disable () {
+        this.envTokensSet()
         await this.checkSslModEnabled()
         await this.db
             .table('host')
@@ -164,7 +166,7 @@ class Ssl {
             nameservers.forEach((el) => {
                 promises.push(this.getCurrentIPForDomain(el))
             })
-            let getAvantiServerIPs = await this.getCurrentIPForDomain('avanti-dns.mbox.lu')
+            let getAvantiServerIPs = await this.getCurrentIPForDomain(process.env.DOMAIN_WITH_NAMESERVERS)
             return await Promise.all(promises).then((element) => {
                 let nameserverips = [].concat.apply([], element)
                 nameserverips.forEach((ip) => {
@@ -246,6 +248,14 @@ class Ssl {
                 throw new Task.Warning('Apache2 Module not installed  (phyton3-certbot-apache)');
             }
             throw err;
+        }
+    }
+
+    envTokensSet () {
+        if (!process.env.ACME_SERVER_URL || !process.env.DOMAIN_WITH_NAMESERVERS) {
+            throw new Task.Warning('Check ENV Config Missing');
+        } else {
+            return;
         }
     }
 
