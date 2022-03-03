@@ -291,10 +291,6 @@ class Host {
 
         await this.refresh()
 
-<<<<<<< HEAD
-=======
-        // reload apache2
->>>>>>> master
         await Task.run('apache.configtest');
         await Task.run('apache.reload');
     }
