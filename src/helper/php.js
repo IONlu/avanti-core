@@ -1,16 +1,13 @@
-import globby from 'globby';
-import path from 'path';
 import semver from 'semver';
+import exec from '../exec.js';
 
 export const versions = async () => {
-    const folders = await globby('/etc/php/*', {
-        onlyFiles: false,
-        onlyDirectories: true
-    });
-    if (!folders.length) {
+    let phpversions = await exec("dpkg --list | grep '^ii' | grep -i fpm | grep -i php | awk -F' ' '{ print $2 }' | sed 's#\php##g' | sed 's#\-fpm##g'")
+    phpversions = phpversions.split('\n').filter((val) => !!val)
+    if (!phpversions.length) {
         throw new Error('No PHP version found');
     }
-    return folders.map(folder => path.basename(folder));
+    return phpversions
 };
 
 export const latest = async () => {

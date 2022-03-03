@@ -4,7 +4,7 @@
 <VirtualHost *:{{port}}>
     ServerName {{name}}
     {{#if alias}}
-    ServerAlias{{#each alias}} {{.}}{{/each}}
+        ServerAlias{{#each alias}} {{.}}{{/each}}
     {{/if}}
 
     DocumentRoot {{documentRoot}}
@@ -25,4 +25,40 @@
     </Directory>
 
     Include /etc/apache2/avanti/{{name}}.conf
+
+    RewriteEngine on
+    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
 </VirtualHost>
+
+{{#if ssl}}
+    <IfModule mod_ssl.c>
+        <VirtualHost *:443>
+            ServerName {{name}}
+            {{#if alias}}
+                ServerAlias{{#each alias}} {{.}}{{/each}}
+            {{/if}}
+
+            DocumentRoot {{documentRoot}}
+
+            ErrorLog "|/usr/bin/cronolog {{logsFolder}}/error.log-%Y%m%d"
+            CustomLog "|/usr/bin/cronolog {{logsFolder}}/access.log-%Y%m%d" combined
+
+            <FilesMatch ".+\.php$">
+                SetHandler "proxy:unix:/run/php/{{user}}.sock|fcgi://{{name}}"
+            </FilesMatch>
+
+            <Proxy "fcgi://{{name}}">
+                ProxySet connectiontimeout=5 timeout=30
+            </Proxy>
+
+            <Directory "{{documentRoot}}">
+                AllowOverride All
+            </Directory>
+
+            Include /etc/apache2/avanti/{{name}}.conf
+            #Include /etc/letsencrypt/options-ssl-apache.conf
+            SSLCertificateFile {{path}}/certs/fullchain.pem
+            SSLCertificateKeyFile {{path}}/certs/privkey.pem
+        </VirtualHost>
+    </IfModule>
+{{/if}}
