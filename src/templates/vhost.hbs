@@ -25,9 +25,10 @@
     </Directory>
 
     Include /etc/apache2/avanti/{{name}}.conf
-
+    {{#if ssl}}
     RewriteEngine on
     RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+    {{/if}}
 </VirtualHost>
 
 {{#if ssl}}
