@@ -161,7 +161,7 @@ class Ssl {
         let whois = await this.getWhoisForDomain(this.getDomainOutOfHostname(host.host))
         if (whois && whois.nserver) {
             let promises = []
-            let nameservers = whois.nserver.split(' ')
+            let nameservers = whois
             nameservers.forEach((el) => {
                 promises.push(this.getCurrentIPForDomain(el))
             })
@@ -188,7 +188,7 @@ class Ssl {
         let serverIp = await this.getAvantiServerIP()
         let promises = []
         domains.forEach((domain) => {
-            promises.push(this.getCurrentIPForDomain(domain, whois.nserver.split(' ')[0]))
+            promises.push(this.getCurrentIPForDomain(domain, whois[0]))
         })
         return await Promise.all(promises).then((element) => {
             element.forEach((ip, index) => {
