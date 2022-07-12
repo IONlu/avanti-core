@@ -3,7 +3,6 @@ import { exists } from './utils/file'
 import * as Task from './task';
 import Host from './host.js';
 import exec from './exec';
-import Whois from './helper/whois';
 const { getDomain } = require('tldts');
 
 class Ssl {
@@ -202,7 +201,17 @@ class Ssl {
 
     async getWhoisForDomain (domain) {
         try {
-            return await Whois(domain)
+          let params = {
+            domain: domain
+          }
+          return exec('dig ns {{domain}} +short', params).then((element) => {
+               return element.trim().split('\n').map((str) => {
+                  if(str.lastIndexOf('.') === (str.length - 1)){
+                    str = str.substring(0, str.length - 1)
+                  }
+                  return str
+               })
+          })
         } catch (err) {
             throw new Task.Warning(err.message);
         }
@@ -245,7 +254,7 @@ class Ssl {
             return await exec("dpkg -l | grep -E '^ii' | grep python3-certbot-apache")
         } catch (err) {
             if (err.code === 1) {
-                throw new Task.Warning('Apache2 Module not installed  (phyton3-certbot-apache)');
+                throw new Task.Warning('Apache2 Module not installed  (python3-certbot-apache)');
             }
             throw err;
         }
