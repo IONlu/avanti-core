@@ -205,12 +205,16 @@ class Ssl {
             domain: domain
           }
           return exec('dig ns {{domain}} +short', params).then((element) => {
-               return element.trim().split('\n').map((str) => {
-                  if(str.lastIndexOf('.') === (str.length - 1)){
-                    str = str.substring(0, str.length - 1)
-                  }
-                  return str
-               })
+            if (element) {
+              return element.trim().split('\n').map((str) => {
+                 if(str.lastIndexOf('.') === (str.length - 1)){
+                   str = str.substring(0, str.length - 1)
+                 }
+                 return str
+              })
+            } else {
+              return []
+            }
           })
         } catch (err) {
             throw new Task.Warning(err.message);
