@@ -159,7 +159,7 @@ class Ssl {
 
     async checkDomainNameServersMatchingAvanti (host) {
         let whois = await this.getWhoisForDomain(this.getDomainOutOfHostname(host.host))
-        if (whois && whois.nserver) {
+        if (whois && whois.length) {
             let promises = []
             let nameservers = whois
             nameservers.forEach((el) => {
